@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+
+</body>
+</html>
+<script>
+    /*
+jtopo进行自动环形布局
+*/
+
+    $(function(){
+        var linkarray=[];//所有链接关系集合  结构：[0:[ip1:"192.168.5.1",ip2:"192.168.2.1",node1id:"192.168.5.1:2[GigabitEthernet0/0/2]",node2id:"192.168.2.1:0[WAN]",port1:":2[GigabitEthernet0/0/2]",port2:":0[WAN]"],1:....]省略
+        var allnode=[];//已添加的节点数组
+        var isrepeatlist=[];
+        var sourceNode;
+
+        function startcore(startnode)//startnode为拓扑起点  类型 ：字符串类型
+        {//传入核心交换机，并且开始递归
+            var node = addNode(startnode);
+            sourceNode = node;
+            node.nodeid=startnode;
+            node.setLocation($("#canvas").width()/3,250);
+            allnode.push(node);
+            node.nodedeep=0;
+            addnodeline(startnode,scene,node);
+            JTopo.layout.layoutNode(scene, node, true);
+        }
+
+        function islinkrepeat(node1id,node2id){//检查这个连接关系是否已经存在(a,b相连可以有两个链接关系来表达)
+            var test=true;
+            for(var i=0;i<isrepeatlist.length;i++){
+                if(((isrepeatlist[i].node1id==node1id)&&(isrepeatlist[i].node2id==node2id))||((isrepeatlist[i].node1id==node2id)&&(isrepeatlist[i].node2id==node1id))){
+                    test=false;
+                }
+            }
+            return test;
+        }//查询连接是否重复
+
+        function addnodeline(parentid,scene,node){//添加点和线，并且递归
+            var isfirst=true;//
+            for(var i=0;i<linkarray.length;i++){
+                if(linkarray[i].ip1==parentid || linkarray[i].ip2==parentid)
+                {
+                    isfirst=(linkarray[i].ip1==parentid);
+                    if(islinkrepeat(linkarray[i].node1id,linkarray[i].node2id))//判断该连线是否已经存在，区分端口号
+                    {
+                        var isadd=true;//判断另一节点是否存在，如果存在添加连线
+                        for(var j=0;j<allnode.length;j++)
+                        {
+                            if((isfirst?linkarray[i].ip2:linkarray[i].ip1)==allnode[j].ip)
+                            {
+                                addLink(allnode[j], node,linkarray[i].port1,linkarray[i].port2);
+                                isrepeatlist.push({node1id:linkarray[i].node1id,node2id:linkarray[i].node2id});
+                                isadd=false;
+                            }
+                        }
+                        if(isadd){//另一个节点不存在，先添加节点，再添加连线
+                            var newnode = addNode((isfirst?linkarray[i].ip2:linkarray[i].ip1));
+                            newnode.nodedeep=node.nodedeep+1;
+                            allnode.push(newnode);
+
+                            if(shape == 0)//如果拓扑风格为环形风格，将所有节点的子节点记录下来方便以后时候
+                            {
+                                for(var j=0;j<allnode.length;j++)
+                                {
+                                    if(allnode[j].ip == parentid)
+                                        allnode[j].children.push(newnode);
+                                }
+                            }
+                            addLink(node,newnode,linkarray[i].port1,linkarray[i].port2);
+                            isrepeatlist.push({node1id:linkarray[i].node1id,node2id:linkarray[i].node2id});
+                            addnodeline(isfirst?linkarray[i].ip2:linkarray[i].ip1,scene,newnode);
+                        }
+                    }
+                }
+            }
+        }
+        countRadius(sourceNode , 80);
+        layoutCircle(sourceNode);
+
+
+        /**
+         * 就按节点领域半径及布局半径
+         * @param {ht.Node} root - 根节点对象
+         * @param {Number} minR - 最小半径
+         */
+        function countRadius(root, minR) {
+
+            minR = (minR == null ? 25 : minR);
+// 如果是末端节点，则设置其布局半径及领域半径为最小半径
+            if (root.children.length == 0) {       //root.children.length
+                root.radius = minR;
+                root.totalRadius = minR;
+                return;
+            }
+// 遍历孩子节点递归计算半径
+            var children = root.children.concat();
+            children.forEach(function(child) {
+                countRadius(child, minR);
+            });
+
+            var child0 = root.children[0];
+// 获取孩子节点半径
+            var radius = child0.radius,
+                totalRadius = child0.totalRadius;
+// 计算子节点的1/2张角//Math.PI
+            var degree = Math.PI / (children.length == 1 ? 2: children.length);
+// 计算父亲节点的布局半径(children.length == 1 ? 1:Math.sin(degree))//Math.sin(degree);
+            var pRadius = totalRadius /(children.length == 1 ? 1:Math.sin(degree));
+// 缓存父亲节点的布局半径
+            root.radius = pRadius;
+// 缓存父亲节点的领域半径
+            root.totalRadius = pRadius + totalRadius;
+// 缓存其孩子节点的布局张角
+            root.cd_degree = degree * 2;
+        }
+        /**
+         * 布局树
+         * @param {ht.Node} root - 根节点
+         */
+        function layoutCircle(root) {
+// 获取到所有的孩子节点对象数组
+            var children = root.children.concat();
+// 获取孩子节点个数
+            var len = children.length;
+// 计算张角
+            var degree = root.cd_degree;
+// 根据三角函数计算绕父亲节点的半径
+            var r = root.radius;
+// 获取父亲节点的位置坐标
+            var rootPositionX = root.x;
+            var rootPositionY = root.y;
+            children.forEach(function(child, index) {
+// 根据三角函数计算每个节点相对于父亲节点的偏移量
+                var s = Math.sin(degree * index),
+                    c = Math.cos(degree * index),
+                    x = s * r,
+                    y = c * r;
+// 设置孩子节点的位置坐标
+                child.setLocation(x + rootPositionX, y + rootPositionY);
+// 递归调用布局孩子节点
+                layoutCircle(child);
+            });
+        }
+
+        function addNode(text){
+            var node = new JTopo.Node();
+            node.fontColor = '0,0,0';
+            node.font = '14px 微软雅黑';
+            node.setSize(100, 60);
+            node.alpha = 1;
+            node.ip = text;
+
+            node.radius = 0;//缓存父亲节点的布局半径
+            node.totalRadius = 0;//缓存父亲节点的领域半径
+            node.cd_degree = 0; //缓存其孩子节点的布局张角
+            node.children =[];//子节点
+            scene.add(node);
+        }
+
+        function addLink(nodeA, nodeZ,p1,p2)
+        {
+            if( nodeA.ip > nodeZ.ip)
+            {
+                var node=nodeA;
+                nodeA=nodeZ;
+                nodeZ=node;
+                var p=p1;
+                p1=p2;
+                p2=p;
+            }
+            var link = new JTopo.Link(nodeA, nodeZ);
+            link.text1=p1+';'+p2;
+            link.bundleGap = 8;
+            link.strokeColor = "150,150,150";
+            scene.add(link);
+            return link;
+        }
+    });
+</script>
