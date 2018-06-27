@@ -15,3 +15,7 @@
  ![](img3.gif)
 
 [我一哥们的threeTestdemo](https://doter1995.github.io/three/threeTest/)
+
+[我一哥们做的d3增加点的功能](https://doter1995.github.io/d3/charts/force.html)
+
+[然后是这哥们吹牛* 的主页](https://doter1995.github.io/)
