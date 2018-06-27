@@ -13,3 +13,5 @@
  
  ### demo3
  ![](img3.gif)
+
+[我一哥们的threeTestdemo](https://doter1995.github.io/three/threeTest/)
