@@ -1,5 +1,47 @@
 /**
  * Created by yanb on 2018/06/27
+ * 需要实现的功能：
+ * 1、首次页面布局好看（d3自带 这也是吸引我用d3的原因）实现
+ * 2、点的自定义属性 实现
+ * 3、点的自定义颜色 实现
+ * 4、点的自定义大小 实现
+ * 5、点的自定义图片（可实现 此demo未做体现）
+ * 6、点的mouseover事件 实现
+ * 7、点的mouseout事件 实现
+ * 8、点的dblclick事件 实现
+ * 9、点的拖拽功能 实现
+ * 10、点的自定义位置 不受力的作用（暂未研究）
+ * 11、点的自定义文字 实现
+ * 12、点的文字hover控制功能 实现
+ * 13、线的自定义颜色 实现
+ * 14、线的自定义粗细 实现
+ * 15、线的自定义属性 实现
+ * 16、线的箭头及其它形形状（可实现 此demo未做体现）
+ * 17、线的流动性样式（未做研究）
+ * 18、虚线（未做研究）
+ * 19、曲线（未做研究）
+ * 20、拆线（未做研究）
+ * 21、贝塞尔曲线（未做研究）
+ * 22、线的mouseover事件 实现
+ * 23、线的mouseout事件 实现
+ * 24、线的dblclick事件 实现
+ * 25、线的自定义文字 实现
+ * 26、根据连线值的大小渲染连线颜色的深浅功能 实现一半
+ * 27、双击点增加新点并与之相连的功能 已实现但并不友好
+ *   要求钻取点的时候不受力的作用自己定点的位置（暂不知如何实现）
+ *
+ * 28、清除所有的点线功能 完成
+ * 29、鼠标缩放画布功能 完成
+ * 30、鼠标拖动画布功能 完成
+ * 31、拖动以及缩放画布后居中和还原缩放的功能（暂未实现）
+ * 32、画布自适应浏览器大小变化重载功能（暂未实现）
+ * 33、鹰眼功能（暂未实现）
+ *  目前有两个功能特别重要且暂未实现！！！
+ *  1、点线的保存带位置坐标重新请求此已保存数据并渲染到页面中的代码实现（我实现的时候点我可以控制 但是线不知道如何控制或者说不受控）
+ *  2、点的钻取时不受力的作用力自定义位置的代码实现 （这个我是完全不知道该如何写）
+ *
+ *
+ *
  */
 ;
 $(function () {
@@ -39,7 +81,11 @@ $(function () {
         var targetAry = [];
         var connections = (Math.round(Math.random() * 5));
         for (var y = 0; y < connections; y++) {
-            targetAry.push(Math.round(Math.random() * numNodes))
+            // targetAry.push(Math.round(Math.random() * numNodes))
+            targetAry.push(Math.round(Math.random() * (numNodes-1)))
+        }
+        if(!targetAry.length){
+            targetAry.push(Math.round(Math.random() * (numNodes-1)))
         }
         nodes.push({
             id: x,
@@ -89,7 +135,7 @@ $(function () {
             .attr("class","lineG")
             .on("mouseover",function (d) {
                 d3.select(this).select(".line")
-                    .attr('stroke-width', 2);
+                    .attr('stroke-width', 5);
                 d3.select(this).select(".lineText")
                     .attr("class","lineText")
             })
@@ -138,7 +184,7 @@ $(function () {
                     .attr('font-weight', 'bold')
                     .attr("class","nodeText");
                 d3.select(this).select('circle')
-                    .attr('stroke-width', '2')
+                    .attr('stroke-width', '5')
                     .attr('stroke',palette.lightgray);
                 for(var i = 0; i < d.target.length; i++) {
                     d3.select('#node_' + d.target[i]).select('text')
@@ -150,7 +196,7 @@ $(function () {
                     if(links[x].target !== undefined) {
                         if(links[x].target.id === d.id) {
                             d3.selectAll('.to_' + links[x].target.id)
-                                .attr('stroke-width', 2);
+                                .attr('stroke-width', 5);
                             d3.select('#node_' + links[x].source.id).select('text')
                                 .attr('font-size', '14')
                                 .attr('font-weight', 'bold')
@@ -159,7 +205,7 @@ $(function () {
                     }
                 }
                 d3.selectAll('.line_' + d.id)
-                    .attr('stroke-width', 2)
+                    .attr('stroke-width', 5)
             })
             .on("mouseout",function (d) {
                 d3.select(this).select('text')
@@ -184,14 +230,32 @@ $(function () {
                     }
                 }
             })
+            .on("mousedown",function (d) {
+                if(flag){
+                    console.log(d.x);
+                    console.log(d.y);
+                }
+            })
+            .on("mouseup",function (d) {
+                if(flag){
+                    console.log(d.x);
+                    console.log(d.y);
+                }
+            })
             .call(forceLayout.drag);
         node.append('circle')
-            // .attr('cx', function(d) {
-            //     return d.x
-            // })
-            // .attr('cy', function(d) {
-            //     return d.y
-            // })
+            .attr('cx', function(d,i,n) {
+                if(flag){
+                    // return d.x;
+                }
+                // return d.x;
+            })
+            .attr('cy', function(d,i,n) {
+                if(flag){
+                    // return d.y;
+                }
+                // return d.y;
+            })
             .attr('r', circleWidth)
             .attr('fill', function(d, i) {
                 if(i%2){
@@ -324,6 +388,4 @@ $(function () {
         forceLayout.start();
     }
     updata(nodes,links);
-
-
 });
