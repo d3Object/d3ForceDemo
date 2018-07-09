@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+    <style>
+        body{
+            font-family: "Exo 2", "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 300;
+            font-size: 1.2em;
+            line-height: 1.2em;
+            background: #FDF6E3;
+            color: #475B62;
+        }
+        .cursor{
+            cursor: pointer;
+        }
+        .none{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="element_id"></div>
+</body>
+</html>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="js/d3.v4.js"></script>
+<script src="customjs/d3graph.js"></script>
+<script>
+    var linkVal = [],
+        nodes = [],
+        numNodes = 125,
+        links = [];
+    for(var i=0;i<255;i++){
+        linkVal.push(parseInt(Math.random()*1000))
+    }
+    for (var x = 0; x < numNodes; x++) {
+        var targetAry = [];
+        var connections = (Math.round(Math.random() * 5));
+        for (var y = 0; y < connections; y++) {
+            // targetAry.push(Math.round(Math.random() * numNodes))
+            targetAry.push(Math.round(Math.random() * (numNodes-1)))
+        }
+        if(!targetAry.length){
+            targetAry.push(Math.round(Math.random() * (numNodes-1)))
+        }
+        nodes.push({
+            id: x,
+            name: "Node " + x,
+            target: targetAry,
+            value:linkVal[x]
+        })
+    }
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].target !== undefined) {
+            for (var j = 0; j < nodes[i].target.length; j++) {
+                links.push({
+                    fromID: i,
+                    toID: nodes[i].target[j],
+                    value:i
+                })
+            }
+        }
+    }
+    var data = {
+            "nodes":nodes,
+            "edges":links
+        },
+        index = numNodes,
+        flag;
+    $(function(){
+        d3graph.init({
+            datas: data,
+            nodeEvent: {
+                dblclick: function(d, i, n) {
+                    if(flag){
+                        var newNumNodes = parseInt(Math.random() * 10),
+                            nodes = [],
+                            links = [],
+                            tempNum = 0;
+                        for (var y = 0; y < newNumNodes; y++) {
+                            // index += y+1;
+                            tempNum = index + y +1;
+                            nodes.push({
+                                id: tempNum,
+                                name: "node" + tempNum,
+                                // fixed: true,
+                                target: [d.id],
+                                value:tempNum
+                            });
+                            links.push({
+                                "fromID": d.id,
+                                "toID": tempNum,
+                                "value": tempNum
+                            })
+                        }
+                        index += tempNum;
+                        d3graph.loadData({
+                            "nodes": nodes,
+                            "edges": links
+                        });
+                    }else {
+                        d3graph.options.datas = {
+                            "nodes":[],
+                            "edges":[]
+                        };
+                        d3graph.loadData({
+                            "nodes": [
+                                {
+                                    "id": index,
+                                    "fixed": true,
+                                    "name": "node" + index,
+                                    "target":index-1,
+                                    "value":index
+                                },
+                                {
+                                    "id": index-1,
+                                    "fixed": true,
+                                    "name": "node" + (index-1),
+                                    "target":index,
+                                    "value":index
+                                }
+                            ],
+                            "edges": [{
+                                "fromID": index-1,
+                                "toID": index,
+                                "value": index
+                            }]
+                        });
+                        index += 1;
+                        flag = true;
+                    }
+                }
+            }
+        }).loadData();
+    })
+</script>
