@@ -54,22 +54,22 @@
         elementID : "#element_id",
         style:{
             svgStyle:{
-                "class":'stage_svg',
+                class:'stage_svg',
                 css:{
                     width:window.innerWidth,
                     height:window.innerHeight
                 }
             },
             gStyle:{
-                "class":'stage_g',
+                class:'stage_g',
                 css:{}
             },
             lineStyle:{
-                "class":'link cursor',
+                class:'link cursor',
                 css:{}
             },
             nodeStyle:{
-                "class":'nodes cursor',
+                class:'nodes cursor',
                 attr:{
                     r:'5'
                 },
@@ -110,38 +110,41 @@
         ],
         stageEvent:{
             mousedown:function(d,i){
-                console.log("stage  mousedown");
+                // console.log("stage  mousedown");
             },
             mouseup:function(d,i){
-                console.log("stage mouseup");
+                // console.log("stage mouseup");
             },
             mouseover:function(d,i){
-                console.log("stage mouseover");
+                // console.log("stage mouseover");
             },
             mouseout:function(d,i){
-                console.log("stage mouseout");
+                // console.log("stage mouseout");
             },
             click:function(d,i){
-                console.log("stage click");
+                // console.log("stage click");
             },
             dblclick:function(d,i){
-                console.log("stage dblclick");
+                // console.log("stage dblclick");
             },
             contextmenu:function(d,i){
-                console.log("stage contextmenu");
+                // console.log("stage contextmenu");
                 // d3.event.preventDefault();
             }
         },
         nodeEvent:{
             mousedown:function(d,i,n){
-                console.log("node mousedown");
+                console.log(d);
+                _this.mouseDownNode = {
+                    x:d.x,
+                    y:d.y
+                };
+                // console.log("node mousedown");
             },
             mouseup:function(d,i,n){
-                console.log("node mouseup");
+                // console.log("node mouseup");
             },
             mouseover:function(d,i,n){
-                console.log(d);
-                console.log($(this));
                 d3.select(this).select('text')
                     .attr('font-size', '16')
                     .attr('font-weight', 'bold')
@@ -156,8 +159,6 @@
                         .attr("class","nodeText");
                 }
                 for(var x = 0; x < d.target.length; x++) {
-                    console.log("#"+d.index+"_"+d.target[x]);
-                    console.log($("#"+d.index+"_"+d.target[x]));
                     $("#"+d.index+"_"+d.target[x])
                         .attr('stroke-width', 5);
                 }
@@ -181,19 +182,20 @@
                 }
             },
             click:function(d,i,n){
-                console.log("node click");
+                // console.log("node click");
             },
             dblclick:function(d,i,n){
-                console.log("node click");
+                // console.log("node dblclick");
+                d.center = true;
             },
             contextmenu:function(d,i,n){}
         },
         linkEvent :{
             mousedown:function(d,i,l){
-                console.log("link mousedown");
+                // console.log("link mousedown");
             },
             mouseup:function(d,i,l){
-                console.log("link mouseup");
+                // console.log("link mouseup");
             },
             mouseover:function(d,i,l){
                 d3.select(this)
@@ -208,10 +210,10 @@
                     .attr("class","lineText none");
             },
             click:function(d,i,l){
-                console.log("link click");
+                // console.log("link click");
             },
             dblclick:function(d,i,l){
-                console.log("link dblclick");
+                // console.log("link dblclick");
             },
             contextmenu:function(d,i,l){}
         }
@@ -241,7 +243,7 @@
     _this.zoomed=function(){
         _this.mapG.attr("transform", d3.event.transform);
     };
-    _this.loadData=function(data ){
+    _this.loadData=function(data){
         if( "object" === $.type(data) && testObject(data)){
             //添加新的节点数据，并根据id去重
             if(isnotarray(data.nodes) ){
@@ -280,7 +282,7 @@
             .call(_this.d3css( _this.options.style.lineStyle.css ))
             .call(_this.d3attr({
                 "stroke-width":"1",
-                "stroke":"#CFECF9"
+                "stroke":"#65C3F9"
             }))
             .attr('id', function (d) {
                 return d.source.index + '_' + d.target.index;
@@ -335,9 +337,14 @@
         return  _this;
     };
     _this.dragstart=function(d, i) {
-        if (!d3.event.active)  _this.force.alphaTarget(0.5).restart();
-        d.fx = d.x;
-        d.fy = d.y;
+        // if (!d3.event.active)  _this.force.alphaTarget(0.5).restart();
+        // d.fx = d.x;
+        // d.fy = d.y;
+        if(!d3.event.active){
+            _this.force.alphaTarget(0.5).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
     };
     _this.dragmove=function(d, i) {
         d.fx = d3.event.x;
@@ -345,8 +352,27 @@
     };
     _this.dragend=function(d, i) {
         //d.fixed = true;    //拖拽开始后设定被拖拽对象为固定
-        if (!d3.event.active) _this.force.alphaTarget(0);
+        if (!d3.event.active){
+            _this.force.alphaTarget(0);
+        }
         //_this.force.stop();
+        if(d3.event.sourceEvent.type == "mouseup"){
+            console.log(d);
+            if(d.center){
+                var x1 = _this.mouseDownNode.x - d.x,
+                    y1 = _this.mouseDownNode.y - d.y;
+                for(var i = 0;i<d.target.length;i++){
+                    for(j = 0;j<_this.options.datas.nodes.length;j++){
+                        if(d.target[i] == _this.options.datas.nodes[j].id && !_this.options.datas.nodes[j].center){
+                            _this.options.datas.nodes[j].x += x1;
+                            _this.options.datas.nodes[j].y += y1;
+                        }
+                    }
+                }
+                console.log("enter");
+                d3graph.loadData(_this.options.datas);
+            }
+        }
     };
     _this.nodeDrag = d3.drag()
         .on("start", _this.dragstart)
@@ -354,7 +380,6 @@
         .on("end", _this.dragend);
     _this.startSport=function(){
         _this.force.on("tick", _this.tick);
-
     };
     _this.tick=function() {
         _this.node.attr('transform', function(d, i) {
@@ -472,6 +497,8 @@
         }
         return d3event;
     };
+    _this.flag = false;
+    _this.mouseDownNode = undefined;
     function testObject(obj){
         var flag = false;
         if(null !== obj && ""  !== obj){
@@ -557,4 +584,36 @@
         }
         return arr;
     }
+
+    /**
+     *
+     * @param i
+     * @param centerPointX
+     * @param centerPointY
+     * @param Num
+     * @param cicR
+     * @returns {{x: *, y: *}}
+     * @constructor
+     */
+    _this.LocationXy = function (i,centerPointX,centerPointY,Num,cicR) {
+        /**
+         *﻿﻿
+         圆点坐标：(x0,y0)
+         半径：r
+         角度：a0
+         则圆上任一点为：（x1,y1）
+         x1   =   x0   +   r   *   cos(ao   *   3.14   /180   )
+         y1   =   y0   +   r   *   sin(ao   *   3.14   /180   )
+         *
+         */
+        var angle = 360/Num,
+            hudu = (2*Math.PI/360) * angle * (i+1),
+            x = centerPointX + Math.sin(hudu) * cicR,
+            y = centerPointY + Math.cos(hudu) * cicR;
+        return {
+            x:x,
+            y:y
+        }
+    }
+
 }();
