@@ -294,7 +294,7 @@
             .attr('font-size', '14')
             .attr('font-weight', 'bold')
             .attr("dy","1.5em")
-            .text(function(d) { return String(d.value) || '' })
+            .text(function(d) { return String(d.value) || '' });
         // .append('avg:textPath')
         // .attr("onselectstart","return false;" )
         // .attr("startOffset", "50%")
@@ -360,16 +360,41 @@
             console.log(d);
             if(d.center){
                 var x1 = _this.mouseDownNode.x - d.x,
-                    y1 = _this.mouseDownNode.y - d.y;
+                    y1 = _this.mouseDownNode.y - d.y,
+                    centerNum = 0,
+                    _tIndex = 0;
                 for(var i = 0;i<d.target.length;i++){
                     for(j = 0;j<_this.options.datas.nodes.length;j++){
-                        if(d.target[i] == _this.options.datas.nodes[j].id && !_this.options.datas.nodes[j].center){
-                            _this.options.datas.nodes[j].x += x1;
-                            _this.options.datas.nodes[j].y += y1;
+                        if(d.target[i] == _this.options.datas.nodes[j].id && _this.options.datas.nodes[j].center){
+                            centerNum += 1;
                         }
                     }
                 }
-                console.log("enter");
+                console.log(centerNum);
+                for(var i = 0;i<d.target.length;i++){
+                    for(j = 0;j<_this.options.datas.nodes.length;j++){
+                        if(d.target[i] == _this.options.datas.nodes[j].id && !_this.options.datas.nodes[j].center){
+                            /**
+                             * 此处应该继续调圆
+                             * @type {number}
+                             */
+                            // _this.options.datas.nodes[j].x += x1;
+                            // _this.options.datas.nodes[j].fx += x1;
+                            // _this.options.datas.nodes[j].y += y1;
+                            // _this.options.datas.nodes[j].fy += y1;
+                            console.log(d.target.length-centerNum);
+                            _this.options.datas.nodes[j].x = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).x;
+                            _this.options.datas.nodes[j].fx = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).x;
+                            _this.options.datas.nodes[j].y = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).y;
+                            _this.options.datas.nodes[j].fy = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).y;
+                            _tIndex +=1;
+                            // console.log(j);
+                            // console.log(_this.options.datas.nodes[j].x);
+                            // console.log(_this.options.datas.nodes[j].y);
+                        }
+                    }
+                }
+                console.log(_this.options.datas);
                 d3graph.loadData(_this.options.datas);
             }
         }
