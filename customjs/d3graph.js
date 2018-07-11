@@ -1,5 +1,6 @@
 /**
  * Created by yanb on 2018/06/27
+ * QQ:511948469
  * 需要实现的功能：
  * 1、首次页面布局好看（d3自带 这也是吸引我用d3的原因）实现
  * 2、点的自定义属性 实现
@@ -9,40 +10,64 @@
  * 6、点的mouseover事件 实现
  * 7、点的mouseout事件 实现
  * 8、点的dblclick事件 实现
- * 9、点的拖拽功能 实现
- * 10、点的自定义位置 不受力的作用（暂未研究）
- * 11、点的自定义文字 实现
- * 12、点的文字hover控制功能 实现
- * 13、线的自定义颜色 实现
- * 14、线的自定义粗细 实现
- * 15、线的自定义属性 实现
- * 16、线的箭头及其它形形状（可实现 此demo未做体现）
- * 17、线的流动性样式（未做研究）
- * 18、虚线（未做研究）
- * 19、曲线（未做研究）
- * 20、拆线（未做研究）
- * 21、贝塞尔曲线（未做研究）
- * 22、线的mouseover事件 实现
- * 23、线的mouseout事件 实现
- * 24、线的dblclick事件 实现
- * 25、线的自定义文字 实现
- * 26、根据连线值的大小渲染连线颜色的深浅功能 实现一半
- * 27、双击点增加新点并与之相连的功能 已实现但并不友好
- *   要求钻取点的时候不受力的作用自己定点的位置（暂不知如何实现）
+ * 9、点的mousedown事件 实现
+ * 10、点的mouseup事件 实现
+ * 11、点的click事件 实现
+ * 12、点的拖拽功能 实现
+ * 13、点的增加功能 实现
+ * 14、点的删除功能
+ * 15、点的更改功能
+ * 16、点的查找功能
+ * 17、点的自定义位置 不受力的作用 实现
+ * 18、点的自定义文字 实现
+ * 19、线的自定义颜色 实现
+ * 20、线的自定义粗细 实现
+ * 21、线的自定义属性 实现
+ * 22、线的箭头及其它形形状（可实现 此demo未做体现）
+ * 23、线的流动性样式（未做研究）
+ * 24、虚线（未做研究）
+ * 25、曲线（未做研究）
+ * 26、拆线（未做研究）
+ * 27、贝塞尔曲线（未做研究）
+ * 28、线的mouseover事件 实现
+ * 29、线的mouseout事件 实现
+ * 30、线的dblclick事件 实现
+ * 31、线的mousedown事件 实现
+ * 32、线的mouseup事件 实现
+ * 33、线的click事件 实现
+ * 34、线的自定义文字 实现
+ * 35、线的增加功能
+ * 36、线的删除功能
+ * 37、线的更改功能
+ * 38、线的查找功能
+ * 38、根据连线值的大小渲染连线颜色的深浅功能 实现一半
+ * 40、双击点增加新点并与之相连的功能 实现
+ * 41、清除所有的点线功能 完成
+ * 42、鼠标缩放画布功能 完成
+ * 43、鼠标拖动画布功能 完成
+ * 44、拖动以及缩放画布后居中和还原缩放的功能（暂未实现）
+ * 45、画布自适应浏览器大小变化重载功能（暂未实现）
+ * 46、自定义点的位置并实现中心点吸引画圆功能 实现
+ * 47、鹰眼功能（暂未实现）
+ * 48、显示隐藏所有的node文字
+ * 49、显示隐藏所有的line文字
+ * 50、缩放设定范围 完成
+ * 目前还差两功能未实现：
+ * 1、连线颜色根据值的大小渲染深浅
+ * 2、点的删除功能
+ * 3、点可以更换成图片
  *
- * 28、清除所有的点线功能 完成
- * 29、鼠标缩放画布功能 完成
- * 30、鼠标拖动画布功能 完成
- * 31、拖动以及缩放画布后居中和还原缩放的功能（暂未实现）
- * 32、画布自适应浏览器大小变化重载功能（暂未实现）
- * 33、鹰眼功能（暂未实现）
- *  目前有两个功能特别重要且暂未实现！！！
- *  1、点线的保存带位置坐标重新请求此已保存数据并渲染到页面中的代码实现
- *  （我实现的时候点我可以控制 但是线不知道如何控制或者说不受控）
- *  2、点的钻取时不受力的作用力自定义位置的代码实现 （这个我是完全不知道该如何写）
  *
  *
  *
+ * 命名规范：
+ *  stage_box
+ *  stage_svg
+ *  stage_g
+ *  lineG line lineText
+ *  nodeG node nodeText
+ *  lineG22_25 linG25_22
+ *  nodeId_265
  *
  */
 ;
@@ -51,7 +76,7 @@
     var _this = window.d3graph;
     _this.options = {
         version:"1.0",
-        elementID : "#element_id",
+        elementID : "#stage_box",
         style:{
             svgStyle:{
                 class:'stage_svg',
@@ -65,11 +90,11 @@
                 css:{}
             },
             lineStyle:{
-                class:'link cursor',
+                class:'line cursor',
                 css:{}
             },
             nodeStyle:{
-                class:'nodes cursor',
+                class:'node cursor',
                 attr:{
                     r:'5'
                 },
@@ -129,16 +154,11 @@
             },
             contextmenu:function(d,i){
                 // console.log("stage contextmenu");
-                // d3.event.preventDefault();
+                d3.event.preventDefault();
             }
         },
         nodeEvent:{
             mousedown:function(d,i,n){
-                console.log(d);
-                _this.mouseDownNode = {
-                    x:d.x,
-                    y:d.y
-                };
                 // console.log("node mousedown");
             },
             mouseup:function(d,i,n){
@@ -153,13 +173,30 @@
                     .attr('stroke-width', '5')
                     .attr('stroke',_this.options.palette.lightgray);
                 for(var i = 0; i < d.target.length; i++) {
-                    d3.select($(".nodeG")[d.target[i]]).select('text')
+                    d3.select(".nodeId_"+d.target[i]).select('text')
                         .attr('font-size', '14')
                         .attr('font-weight', 'bold')
                         .attr("class","nodeText");
                 }
+                //此处还得找到别人target它
+                for(var y = 0;y < _this.options.datas.nodes.length;y++){
+                    for(var j=0;j<_this.options.datas.nodes[y].target.length;j++){
+                        if(_this.options.datas.nodes[y].target[j] == d.id){
+                            d3.select(".nodeId_"+_this.options.datas.nodes[y].id).select('text')
+                                .attr('font-size', '14')
+                                .attr('font-weight', 'bold')
+                                .attr("class","nodeText");
+                            d3.select(".lineG"+d.id+"_"+_this.options.datas.nodes[y].id).select("line")
+                                .attr('stroke-width', 5);
+                            d3.select(".lineG"+_this.options.datas.nodes[y].id+"_"+d.id).select("line")
+                                .attr('stroke-width', 5);
+                        }
+                    }
+                }
                 for(var x = 0; x < d.target.length; x++) {
-                    $("#"+d.index+"_"+d.target[x])
+                    d3.select(".lineG"+d.index+"_"+d.target[x]).select("line")
+                        .attr('stroke-width', 5);
+                    d3.select(".lineG"+d.target[x]+"_"+d.index).select("line")
                         .attr('stroke-width', 5);
                 }
             },
@@ -169,11 +206,8 @@
                 d3.select(this).select('circle')
                     .attr('stroke-width', '')
                     .attr('stroke',"");
-                for(var i = 0; i < d.target.length; i++) {
-                    // d3.select('#node_' + d.target[i]).select('text')
-                    d3.select($(".nodeG")[d.target[i]]).select('text')
-                        .attr("class","nodeText none");
-                }
+                d3.selectAll(".nodeText")
+                    .attr("class","nodeText none");
                 d3.selectAll('.line')
                     .attr('stroke-width', 1);
                 for(var x = 0; x < d.target.length; x++) {
@@ -188,7 +222,9 @@
                 // console.log("node dblclick");
                 d.center = true;
             },
-            contextmenu:function(d,i,n){}
+            contextmenu:function(d,i,n){
+                console.log("node右键");
+            }
         },
         linkEvent :{
             mousedown:function(d,i,l){
@@ -198,24 +234,26 @@
                 // console.log("link mouseup");
             },
             mouseover:function(d,i,l){
-                d3.select(this)
+                d3.select(this).select(".line")
                     .attr('stroke-width', 5);
-                $(this).next()
-                    .attr("class","lineText")
+                d3.select(this).select(".lineText")
+                    .attr("class","lineText");
             },
             mouseout:function(d,i,l){
-                d3.select(this)
+                d3.select(this).select(".line")
                     .attr('stroke-width', 1);
-                $(this).next()
+                d3.select(this).select(".lineText")
                     .attr("class","lineText none");
             },
             click:function(d,i,l){
-                // console.log("link click");
+                console.log(d);
             },
             dblclick:function(d,i,l){
-                // console.log("link dblclick");
+                console.log("link双击");
             },
-            contextmenu:function(d,i,l){}
+            contextmenu:function(d,i,l){
+                console.log("link右键")
+            }
         }
     };
     _this.init=function(option){
@@ -239,7 +277,7 @@
             }));
         return _this;
     };
-    _this.zoom = d3.zoom().on("zoom",function(){_this.zoomed();});
+    _this.zoom = d3.zoom().scaleExtent([0.2,10]).on("zoom",function(){_this.zoomed();});
     _this.zoomed=function(){
         _this.mapG.attr("transform", d3.event.transform);
     };
@@ -274,7 +312,12 @@
             .data(_this.options.datas.edges)
             .enter()
             .append("g")
-            .attr("class","lineG");
+            .attr("class",function (d,i) {
+               return "lineG "+
+                   "lineG"+d.source.id + '_' + d.target.id + " "+
+                   "lineG"+d.target.id + '_' + d.source.id;
+            })
+            .call(_this.d3event( _this.options.linkEvent ));
         _this.link
             .append("line")
             .data(_this.options.datas.edges)
@@ -283,11 +326,10 @@
             .call(_this.d3attr({
                 "stroke-width":"1",
                 "stroke":"#65C3F9"
-            }))
-            .attr('id', function (d) {
-                return d.source.index + '_' + d.target.index;
-            })
-            .call(_this.d3event( _this.options.linkEvent ));
+            }));
+            // .attr('id', function (d) {
+            //     return d.source.index + '_' + d.target.index;
+            // });
         _this.link
             .append("text")
             .attr("class","lineText none")
@@ -295,22 +337,14 @@
             .attr('font-weight', 'bold')
             .attr("dy","1.5em")
             .text(function(d) { return String(d.value) || '' });
-        // .append('avg:textPath')
-        // .attr("onselectstart","return false;" )
-        // .attr("startOffset", "50%")
-        // .attr("xlink:href", function(d) {
-        // 	if (d.source.index === d.target.index) {
-        // 		return false;
-        // 	} else {
-        // 		return "#" + d.source.index + "_" + d.target.index;
-        // 	}
-        // });
         _this.node = _this.mapG
             .selectAll(".nodeG")
             .data(_this.options.datas.nodes)
             .enter()
             .append("g")
-            .attr("class","nodeG")
+            .attr("class",function (d,i) {
+                return "nodeG nodeId_"+d.id;
+            })
             .call(_this.d3event( _this.options.nodeEvent))
             .call(_this.nodeDrag);
         _this.node
@@ -359,9 +393,7 @@
         if(d3.event.sourceEvent.type == "mouseup"){
             console.log(d);
             if(d.center){
-                var x1 = _this.mouseDownNode.x - d.x,
-                    y1 = _this.mouseDownNode.y - d.y,
-                    centerNum = 0,
+                var centerNum = 0,
                     _tIndex = 0;
                 for(var i = 0;i<d.target.length;i++){
                     for(j = 0;j<_this.options.datas.nodes.length;j++){
@@ -374,27 +406,15 @@
                 for(var i = 0;i<d.target.length;i++){
                     for(j = 0;j<_this.options.datas.nodes.length;j++){
                         if(d.target[i] == _this.options.datas.nodes[j].id && !_this.options.datas.nodes[j].center){
-                            /**
-                             * 此处应该继续调圆
-                             * @type {number}
-                             */
-                            // _this.options.datas.nodes[j].x += x1;
-                            // _this.options.datas.nodes[j].fx += x1;
-                            // _this.options.datas.nodes[j].y += y1;
-                            // _this.options.datas.nodes[j].fy += y1;
                             console.log(d.target.length-centerNum);
                             _this.options.datas.nodes[j].x = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).x;
                             _this.options.datas.nodes[j].fx = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).x;
                             _this.options.datas.nodes[j].y = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).y;
                             _this.options.datas.nodes[j].fy = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).y;
                             _tIndex +=1;
-                            // console.log(j);
-                            // console.log(_this.options.datas.nodes[j].x);
-                            // console.log(_this.options.datas.nodes[j].y);
                         }
                     }
                 }
-                console.log(_this.options.datas);
                 d3graph.loadData(_this.options.datas);
             }
         }
@@ -523,7 +543,6 @@
         return d3event;
     };
     _this.flag = false;
-    _this.mouseDownNode = undefined;
     function testObject(obj){
         var flag = false;
         if(null !== obj && ""  !== obj){
