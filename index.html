@@ -21,7 +21,7 @@
     </style>
 </head>
 <body>
-<div id="element_id"></div>
+<div id="stage_box"></div>
 </body>
 </html>
 <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -74,7 +74,7 @@
             nodeEvent: {
                 dblclick: function(d, i, n) {
                     if(d3graph.flag){
-                        var newNumNodes = parseInt(Math.random() * 10),
+                        var newNumNodes = parseInt(Math.random() * 10)+1,
                             nodes = [],
                             links = [],
                             tempNum = 0;
