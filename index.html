@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>index</title>
+<!--    <link  rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg">-->
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
     <style>
         body{
             font-family: "Exo 2", "Helvetica Neue", Helvetica, sans-serif;
@@ -18,6 +21,34 @@
         .none{
             display: none;
         }
+        .nodeContextmenu{
+            /*position:absolute;*/
+            z-index: 2;
+            border-radius: 5px;
+            /*display: none;*/
+            position: absolute;
+            list-style: none;
+            background: #6e839b;
+            /*opacity: 0.9;*/
+            cursor: pointer;
+            -webkit-padding-start: 0px;
+            color:#fff;
+            /*margin: 0;*/
+            /*padding: 0;*/
+            /*font-family: Helvetica Neue,Helvetica, Arial,sans-serif;*/
+            /*font-size: 12px*/
+        }
+        .nodeContextmenu>li{
+            width:120px;
+            margin:5px;
+        }
+        .fontPtcolor{
+            color:#fff;
+            margin-right: 7px;
+        }
+        .white{
+            color:#fff;
+        }
     </style>
 </head>
 <body>
@@ -25,10 +56,12 @@
 </body>
 </html>
 <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.js"></script>
 <script src="js/d3.v4.js"></script>
 <script src="customjs/d3graph.js"></script>
 <script>
     $(function(){
+        /****************造假数据代码***********************/
         var linkVal = [],
             nodes = [],
             numNodes = 125,
@@ -68,11 +101,89 @@
                 "edges":links
             },
             index = numNodes;
+        /****************造假数据代码***********************/
 
         d3graph.init({
             datas: data,
             nodeEvent: {
+                mouseover:function(d,i,n){
+                    d3.select(this).select('text')
+                        .attr('font-size', '16')
+                        .attr('font-weight', 'bold')
+                        .attr("class","nodeText");
+                    d3.select(this).select('circle')
+                        .attr('stroke-width', '5')
+                        .attr('stroke',d3graph.options.palette.lightgray);
+                    for(var i = 0; i < d.target.length; i++) {
+                        d3.select(".nodeId_"+d.target[i]).select('text')
+                            .attr('font-size', '14')
+                            .attr('font-weight', 'bold')
+                            .attr("class","nodeText");
+                    }
+                    //此处还得找到别人target它
+                    for(var y = 0;y < d3graph.options.datas.nodes.length;y++){
+                        for(var j=0;j<d3graph.options.datas.nodes[y].target.length;j++){
+                            if(d3graph.options.datas.nodes[y].target[j] == d.id){
+                                d3.select(".nodeId_"+d3graph.options.datas.nodes[y].id).select('text')
+                                    .attr('font-size', '14')
+                                    .attr('font-weight', 'bold')
+                                    .attr("class","nodeText");
+                                d3.select(".lineG"+d.id+"_"+d3graph.options.datas.nodes[y].id).select("line")
+                                    .attr('stroke-width', 5);
+                                d3.select(".lineG"+d3graph.options.datas.nodes[y].id+"_"+d.id).select("line")
+                                    .attr('stroke-width', 5);
+                            }
+                        }
+                    }
+                    for(var x = 0; x < d.target.length; x++) {
+                        d3.select(".lineG"+d.index+"_"+d.target[x]).select("line")
+                            .attr('stroke-width', 5);
+                        d3.select(".lineG"+d.target[x]+"_"+d.index).select("line")
+                            .attr('stroke-width', 5);
+                    }
+                },
+                mouseout:function(d,i,n){
+                    d3.select(this).select('text')
+                        .attr("class","nodeText none");
+                    if(!d.clHight){
+                        d3.select(this).select('circle')
+                            .attr('stroke-width', '')
+                            .attr('stroke',"");
+                    }
+                    d3.selectAll(".nodeText")
+                        .attr("class","nodeText none");
+                    d3.selectAll('.line')
+                        .attr('stroke-width', 1);
+                    for(var x = 0; x < d.target.length; x++) {
+                        $("#"+d.index+"_"+d.target[x])
+                            .attr('stroke-width', 1);
+                    }
+                },
+                click:function(d,i,n){
+                    // $(document).keydown(function (e) {
+                    //     if(e.keyCode == 17){
+                    //         console.log(e.keyCode);
+                    //     }else {
+                    //         console.log("else");
+                    //     }
+                    // });
+                    d3.selectAll(".node")
+                        .attr('stroke-width', '')
+                        .attr('stroke','');
+                    d3graph.options.datas.nodes.forEach(function (node,index) {
+                        if(i == index){
+                            node.clHight = true;
+                        }else {
+                            node.clHight = false;
+                        }
+                    });
+                    d3.select(this).select('circle')
+                        .attr('stroke-width', '5')
+                        .attr('stroke',d3graph.options.palette.lightgray);
+                    event.stopPropagation();
+                },
                 dblclick: function(d, i, n) {
+                    d.center = true;
                     if(d3graph.flag){
                         var newNumNodes = parseInt(Math.random() * 10)+1,
                             nodes = [],
@@ -115,19 +226,25 @@
                             "nodes": [
                                 {
                                     "id": index,
-                                    "fixed": true,
+                                    "fixed": false,
                                     "name": "node" + index,
                                     "target":[index-1],
                                     "value":index,
-                                    // "center":true
+                                    "x":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).x,
+                                    "y":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).y,
+                                    "fx":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).x,
+                                    "fy":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).y
                                 },
                                 {
                                     "id": index-1,
-                                    "fixed": true,
+                                    "fixed": false,
                                     "name": "node" + (index-1),
                                     "target":[index],
                                     "value":index,
-                                    // "center":true
+                                    "x":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).x,
+                                    "y":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).y,
+                                    "fx":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).x,
+                                    "fy":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).y
                                 }
                             ],
                             "edges": [{
@@ -139,8 +256,106 @@
                         index += 1;
                         d3graph.flag = true;
                     }
+                },
+                contextmenu:function (d,i,n) {
+                    // console.log("node右键");
+                    d3.selectAll(".node")
+                        .attr('stroke-width', '')
+                        .attr('stroke','');
+                    d3graph.options.datas.nodes.forEach(function (node,index) {
+                        if(i == index){
+                            node.clHight = true;
+                        }else {
+                            node.clHight = false;
+                        }
+                    });
+                    d3.select(this).select('circle')
+                        .attr('stroke-width', '5')
+                        .attr('stroke',d3graph.options.palette.lightgray);
+                    d3graph.highlightNodeMenu(d);
+                    // event.stopPropagation();
+                }
+            },
+            linkEvent:{
+                mouseover:function (d,i,l) {
+                    d3.select(this).select(".line")
+                        .attr('stroke-width', 5);
+                    d3.select(this).select(".lineText")
+                        .attr("class","lineText");
+                },
+                mouseout:function (d,i,l) {
+                    d3.select(this).select(".line")
+                        .attr('stroke-width', 1);
+                    d3.select(this).select(".lineText")
+                        .attr("class","lineText none");
+                },
+                click:function (d,i,l) {
+                    d3.selectAll(".node")
+                        .attr('stroke-width', '')
+                        .attr('stroke','');
+                    d3graph.options.datas.nodes.forEach(function (node) {
+                        node.clHight = false;
+                    });
+                    event.stopPropagation();
+                },
+                dblclick:function (d,i,l) {
+                    console.log(d);
+                    console.log("link双击");
+                },
+                contextmenu:function(d,i,l){
+                    console.log("link右键")
+                }
+            },
+            stageEvent:{
+                mousedown:function (d,i) {
+                    // console.log("stageEvent mousedown");
+                },
+                mouseup:function (d,i) {
+                    // console.log("stage mouseup");
+                },
+                mouseover:function(d,i){
+                    d3graph.highlightNodeMenu(d);
+                },
+                mouseout:function(d,i){
+                    // console.log("stage mouseout");
+                },
+                click:function(d,i){
+                  console.log("stage click");
+                    d3.selectAll(".node")
+                        .attr('stroke-width', '')
+                        .attr('stroke','');
+                    d3graph.options.datas.nodes.forEach(function (node) {
+                        node.clHight = false;
+                    })
+                },
+                contextmenu:function(d,i){
+                    d3.event.preventDefault();
                 }
             }
         }).loadData();
+        $(document).keydown(function (e) {
+            // console.log(e.keyCode);
+            /**
+             * ctrl  17
+             * delect 46
+             * enter 13
+             */
+            if(e.keyCode == 46){
+                console.log("可以删除点咯");
+                d3graph.options.datas.nodes.forEach(function (node,index) {
+                    if(node.clHight){
+                        console.log(node);
+                        d3graph.options.datas.edges.forEach(function (link,linkindex) {
+                            if(link.fromID == node.id || link.toID == node.id){
+                                console.log(link);
+                                d3graph.options.datas.edges.splice(linkindex,1)
+                            }
+                        });
+                        d3graph.options.datas.nodes.splice(index,1);
+                        d3graph.loadData(d3graph.options.datas);
+                    }
+                });
+            }
+        })
     })
 </script>
