@@ -56,6 +56,8 @@
  * 1、连线颜色根据值的大小渲染深浅
  * 2、点的删除功能
  * 3、点可以更换成图片
+ * 4、点按住ctrol键加click可以选择多个 并可以通过delet键删除
+ * 5、框选删除
  *
  *
  *
@@ -114,6 +116,22 @@
             nodes:[],
             edges:[]
         },
+        lineColor:function(edges,tVal){
+            var linkVal = [];
+            for(var i=0;i<edges.length;i++){
+                if(linkVal.indexOf(edges[i].value)==-1){
+                    linkVal.push(edges[i].value);
+                }
+            }
+            var sortLinkVal = linkVal.sort(function (a,b) {
+                return a-b;
+            });
+            if(sortLinkVal.length == 1){
+                return _this.options.colorChoose[0];
+            }else {
+                return _this.options.colorChoose[Math.round((_this.options.colorChoose.length-1)*sortLinkVal.indexOf(tVal)/(sortLinkVal.length-1))]
+            }
+        },
         palette : {
             "lightgray": "#D9DEDE",
             "gray": "#C3C8C8",
@@ -134,126 +152,31 @@
             "#1e81f9"
         ],
         stageEvent:{
-            mousedown:function(d,i){
-                // console.log("stage  mousedown");
-            },
-            mouseup:function(d,i){
-                // console.log("stage mouseup");
-            },
-            mouseover:function(d,i){
-                // console.log("stage mouseover");
-            },
-            mouseout:function(d,i){
-                // console.log("stage mouseout");
-            },
-            click:function(d,i){
-                // console.log("stage click");
-            },
-            dblclick:function(d,i){
-                // console.log("stage dblclick");
-            },
-            contextmenu:function(d,i){
-                // console.log("stage contextmenu");
-                d3.event.preventDefault();
-            }
+            mousedown:function(d,i){},
+            mouseup:function(d,i){},
+            mouseover:function(d,i){},
+            mouseout:function(d,i){},
+            click:function(d,i){},
+            dblclick:function(d,i){},
+            contextmenu:function(d,i){}
         },
         nodeEvent:{
-            mousedown:function(d,i,n){
-                // console.log("node mousedown");
-            },
-            mouseup:function(d,i,n){
-                // console.log("node mouseup");
-            },
-            mouseover:function(d,i,n){
-                d3.select(this).select('text')
-                    .attr('font-size', '16')
-                    .attr('font-weight', 'bold')
-                    .attr("class","nodeText");
-                d3.select(this).select('circle')
-                    .attr('stroke-width', '5')
-                    .attr('stroke',_this.options.palette.lightgray);
-                for(var i = 0; i < d.target.length; i++) {
-                    d3.select(".nodeId_"+d.target[i]).select('text')
-                        .attr('font-size', '14')
-                        .attr('font-weight', 'bold')
-                        .attr("class","nodeText");
-                }
-                //此处还得找到别人target它
-                for(var y = 0;y < _this.options.datas.nodes.length;y++){
-                    for(var j=0;j<_this.options.datas.nodes[y].target.length;j++){
-                        if(_this.options.datas.nodes[y].target[j] == d.id){
-                            d3.select(".nodeId_"+_this.options.datas.nodes[y].id).select('text')
-                                .attr('font-size', '14')
-                                .attr('font-weight', 'bold')
-                                .attr("class","nodeText");
-                            d3.select(".lineG"+d.id+"_"+_this.options.datas.nodes[y].id).select("line")
-                                .attr('stroke-width', 5);
-                            d3.select(".lineG"+_this.options.datas.nodes[y].id+"_"+d.id).select("line")
-                                .attr('stroke-width', 5);
-                        }
-                    }
-                }
-                for(var x = 0; x < d.target.length; x++) {
-                    d3.select(".lineG"+d.index+"_"+d.target[x]).select("line")
-                        .attr('stroke-width', 5);
-                    d3.select(".lineG"+d.target[x]+"_"+d.index).select("line")
-                        .attr('stroke-width', 5);
-                }
-            },
-            mouseout:function(d,i,n){
-                d3.select(this).select('text')
-                    .attr("class","nodeText none");
-                d3.select(this).select('circle')
-                    .attr('stroke-width', '')
-                    .attr('stroke',"");
-                d3.selectAll(".nodeText")
-                    .attr("class","nodeText none");
-                d3.selectAll('.line')
-                    .attr('stroke-width', 1);
-                for(var x = 0; x < d.target.length; x++) {
-                    $("#"+d.index+"_"+d.target[x])
-                        .attr('stroke-width', 1);
-                }
-            },
-            click:function(d,i,n){
-                // console.log("node click");
-            },
-            dblclick:function(d,i,n){
-                // console.log("node dblclick");
-                d.center = true;
-            },
-            contextmenu:function(d,i,n){
-                console.log("node右键");
-            }
+            mousedown:function(d,i,n){},
+            mouseup:function(d,i,n){},
+            mouseover:function(d,i,n){},
+            mouseout:function(d,i,n){},
+            click:function(d,i,n){},
+            dblclick:function(d,i,n){},
+            contextmenu:function(d,i,n){}
         },
         linkEvent :{
-            mousedown:function(d,i,l){
-                // console.log("link mousedown");
-            },
-            mouseup:function(d,i,l){
-                // console.log("link mouseup");
-            },
-            mouseover:function(d,i,l){
-                d3.select(this).select(".line")
-                    .attr('stroke-width', 5);
-                d3.select(this).select(".lineText")
-                    .attr("class","lineText");
-            },
-            mouseout:function(d,i,l){
-                d3.select(this).select(".line")
-                    .attr('stroke-width', 1);
-                d3.select(this).select(".lineText")
-                    .attr("class","lineText none");
-            },
-            click:function(d,i,l){
-                console.log(d);
-            },
-            dblclick:function(d,i,l){
-                console.log("link双击");
-            },
-            contextmenu:function(d,i,l){
-                console.log("link右键")
-            }
+            mousedown:function(d,i,l){},
+            mouseup:function(d,i,l){},
+            mouseover:function(d,i,l){},
+            mouseout:function(d,i,l){},
+            click:function(d,i,l){},
+            dblclick:function(d,i,l){},
+            contextmenu:function(d,i,l){}
         }
     };
     _this.init=function(option){
@@ -282,13 +205,13 @@
         _this.mapG.attr("transform", d3.event.transform);
     };
     _this.loadData=function(data){
-        if( "object" === $.type(data) && testObject(data)){
+        if("object" === $.type(data) && testObject(data)){
             //添加新的节点数据，并根据id去重
-            if(isnotarray(data.nodes) ){
+            if(isnotarray(data.nodes)){
                 _this.options.datas.nodes =  ListUniq(ListAddList(_this.options.datas.nodes,data.nodes  ),'id');
             }
             //添加新的关系数据，并去重
-            if(isnotarray(data.edges) ){
+            if(isnotarray(data.edges)){
                 _this.options.datas.edges =  ListUniq(ListAddList( _this.options.datas.edges,data.edges  ),[ 'fromID','toID'  ]);
             }
         }
@@ -325,7 +248,10 @@
             .call(_this.d3css( _this.options.style.lineStyle.css ))
             .call(_this.d3attr({
                 "stroke-width":"1",
-                "stroke":"#65C3F9"
+                // "stroke":"#65C3F9",
+                "stroke":function (d) {
+                    return _this.options.lineColor(_this.options.datas.edges,d.value)
+                }
             }));
             // .attr('id', function (d) {
             //     return d.source.index + '_' + d.target.index;
@@ -391,7 +317,7 @@
         }
         //_this.force.stop();
         if(d3.event.sourceEvent.type == "mouseup"){
-            console.log(d);
+            // console.log(d);
             if(d.center){
                 var centerNum = 0,
                     _tIndex = 0;
@@ -402,11 +328,9 @@
                         }
                     }
                 }
-                console.log(centerNum);
                 for(var i = 0;i<d.target.length;i++){
                     for(j = 0;j<_this.options.datas.nodes.length;j++){
                         if(d.target[i] == _this.options.datas.nodes[j].id && !_this.options.datas.nodes[j].center){
-                            console.log(d.target.length-centerNum);
                             _this.options.datas.nodes[j].x = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).x;
                             _this.options.datas.nodes[j].fx = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).x;
                             _this.options.datas.nodes[j].y = _this.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).y;
@@ -543,6 +467,30 @@
         return d3event;
     };
     _this.flag = false;
+    _this.highlightNodeMenu = function(obj){
+        if(obj){
+            _this.nodeContextmenu.html(
+                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
+                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
+                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
+                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
+                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
+                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
+                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"
+            )
+                .style("left",(d3.event.pageX)+"px")
+                .style("top",(d3.event.pageY-20)+"px")
+                .attr("class","nodeContextmenu");
+        }else {
+            _this.nodeContextmenu.attr("class","nodeContextmenu none")
+        }
+    };
+    _this.nodeContextmenu = d3.select("body").append("ul")
+        .attr("class","nodeContextmenu none");
+
+
+
+
     function testObject(obj){
         var flag = false;
         if(null !== obj && ""  !== obj){
