@@ -15,7 +15,7 @@
  * 11、点的click事件 实现
  * 12、点的拖拽功能 实现
  * 13、点的增加功能 实现
- * 14、点的删除功能
+ * 14、点的删除功能 实现
  * 15、点的更改功能
  * 16、点的查找功能
  * 17、点的自定义位置 不受力的作用 实现
@@ -37,10 +37,10 @@
  * 33、线的click事件 实现
  * 34、线的自定义文字 实现
  * 35、线的增加功能
- * 36、线的删除功能
+ * 36、线的删除功能 删除点的时候删除 实现
  * 37、线的更改功能
  * 38、线的查找功能
- * 38、根据连线值的大小渲染连线颜色的深浅功能 实现一半
+ * 38、根据连线值的大小渲染连线颜色的深浅功能 实现
  * 40、双击点增加新点并与之相连的功能 实现
  * 41、清除所有的点线功能 完成
  * 42、鼠标缩放画布功能 完成
@@ -52,8 +52,11 @@
  * 48、显示隐藏所有的node文字
  * 49、显示隐藏所有的line文字
  * 50、缩放设定范围 完成
+ * 51、点可以更换成图片 已实现功能 未封装成API
+ * 52、框选删除 暂未实现
+ *
  * 目前还差两功能未实现：
- * 1、连线颜色根据值的大小渲染深浅
+ * 1、连线颜色根据值的大小渲染深浅 完成
  * 2、点的删除功能
  * 3、点可以更换成图片
  * 4、点按住ctrol键加click可以选择多个 并可以通过delet键删除
@@ -253,9 +256,6 @@
                     return _this.options.lineColor(_this.options.datas.edges,d.value)
                 }
             }));
-            // .attr('id', function (d) {
-            //     return d.source.index + '_' + d.target.index;
-            // });
         _this.link
             .append("text")
             .attr("class","lineText none")
@@ -273,6 +273,8 @@
             })
             .call(_this.d3event( _this.options.nodeEvent))
             .call(_this.nodeDrag);
+
+
         _this.node
             .append("circle")
             .attr('class', _this.options.style.nodeStyle['class'])
@@ -285,6 +287,21 @@
             })
             .call(_this.d3css( _this.options.style.nodeStyle.css ))
             .call(_this.d3attr( _this.options.style.nodeStyle.attr));
+
+        // _this.node
+        //     .append("image")
+        //     .attr("xlink:href",function (d,i) {
+        //         return "images/mobile.png"
+        //     })
+        //     .attr("x","-15px")
+        //     .attr("y","-15px")
+        //     .attr("width","30px")
+        //     .attr("height","30px")
+        //     .attr('class', _this.options.style.nodeStyle['class'])
+        //     .call(_this.d3css( _this.options.style.nodeStyle.css ))
+        //     .call(_this.d3attr( _this.options.style.nodeStyle.attr));
+
+
         _this.node
             .append('text')
             .attr('font-size', '12')
