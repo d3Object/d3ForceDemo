@@ -111,7 +111,7 @@
                         .attr('font-size', '16')
                         .attr('font-weight', 'bold')
                         .attr("class","nodeText");
-                    d3.select(this).select('circle')
+                    d3.select(this).select('.node')
                         .attr('stroke-width', '5')
                         .attr('stroke',d3graph.options.palette.lightgray);
                     for(var i = 0; i < d.target.length; i++) {
@@ -136,9 +136,9 @@
                         }
                     }
                     for(var x = 0; x < d.target.length; x++) {
-                        d3.select(".lineG"+d.index+"_"+d.target[x]).select("line")
+                        d3.select(".lineG"+d.id+"_"+d.target[x]).select("line")
                             .attr('stroke-width', 5);
-                        d3.select(".lineG"+d.target[x]+"_"+d.index).select("line")
+                        d3.select(".lineG"+d.target[x]+"_"+d.id).select("line")
                             .attr('stroke-width', 5);
                     }
                 },
@@ -146,7 +146,7 @@
                     d3.select(this).select('text')
                         .attr("class","nodeText none");
                     if(!d.clHight){
-                        d3.select(this).select('circle')
+                        d3.select(this).select('.node')
                             .attr('stroke-width', '')
                             .attr('stroke',"");
                     }
@@ -177,7 +177,7 @@
                             node.clHight = false;
                         }
                     });
-                    d3.select(this).select('circle')
+                    d3.select(this).select('.node')
                         .attr('stroke-width', '5')
                         .attr('stroke',d3graph.options.palette.lightgray);
                     event.stopPropagation();
@@ -269,7 +269,7 @@
                             node.clHight = false;
                         }
                     });
-                    d3.select(this).select('circle')
+                    d3.select(this).select('.node')
                         .attr('stroke-width', '5')
                         .attr('stroke',d3graph.options.palette.lightgray);
                     d3graph.highlightNodeMenu(d);
@@ -308,7 +308,13 @@
             },
             stageEvent:{
                 mousedown:function (d,i) {
-                    // console.log("stageEvent mousedown");
+                    console.log(d3.event.pageX);
+                    console.log(d3.event.pageY);
+                    console.log("stageEvent mousedown");
+                    // d3graph.mapG
+                    //     .append("rect")
+                    //     .attr("style","fill:rgb(0,0,255);stroke-width:1;stroke:rgb(0,0,0)")
+                    //     .attr("")
                 },
                 mouseup:function (d,i) {
                     // console.log("stage mouseup");
@@ -320,7 +326,6 @@
                     // console.log("stage mouseout");
                 },
                 click:function(d,i){
-                  console.log("stage click");
                     d3.selectAll(".node")
                         .attr('stroke-width', '')
                         .attr('stroke','');
@@ -345,17 +350,25 @@
                 d3graph.options.datas.nodes.forEach(function (node,index) {
                     if(node.clHight){
                         console.log(node);
-                        d3graph.options.datas.edges.forEach(function (link,linkindex) {
-                            if(link.fromID == node.id || link.toID == node.id){
-                                console.log(link);
-                                d3graph.options.datas.edges.splice(linkindex,1)
-                            }
-                        });
+
+                        function removeLink(){
+                            d3graph.options.datas.edges.forEach(function (link,linkindex) {
+                                if(link.fromID == node.id || link.toID == node.id){
+                                    console.log(link);
+                                    d3graph.options.datas.edges.splice(linkindex,1);
+                                    removeLink();
+                                }
+                            });
+                        }
+                        removeLink();
                         d3graph.options.datas.nodes.splice(index,1);
                         d3graph.loadData(d3graph.options.datas);
                     }
                 });
             }
-        })
+            if(e.keyCode == 13){
+                d3graph.zoom.transform(d3graph.fdGraph,d3.zoomIdentity);//重置缩放
+            }
+        });
     })
 </script>
