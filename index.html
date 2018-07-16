@@ -21,6 +21,14 @@
         .none{
             display: none;
         }
+        circle.selected{
+            stroke-width: 5;
+            stroke:#D9DEDE ;
+        }
+        rect.selected{
+            stroke-dasharray: 1;
+            stroke: #BD3613;
+        }
         .nodeContextmenu{
             /*position:absolute;*/
             z-index: 2;
@@ -52,6 +60,7 @@
     </style>
 </head>
 <body>
+<!--<img src="images/mobile.png" style="border:1px dashed #BD3613;" alt="">-->
 <div id="stage_box"></div>
 </body>
 </html>
@@ -111,9 +120,13 @@
                         .attr('font-size', '16')
                         .attr('font-weight', 'bold')
                         .attr("class","nodeText");
+                    // d3.select(this).select('.node')
+                    //     .attr('stroke-width', '5')
+                    //     .attr('stroke',d3graph.options.palette.lightgray);
                     d3.select(this).select('.node')
-                        .attr('stroke-width', '5')
-                        .attr('stroke',d3graph.options.palette.lightgray);
+                        .attr("class","node cursor selected");
+                    d3.select(this).select(".nodeRect")
+                        .attr("class","nodeRect selected");
                     for(var i = 0; i < d.target.length; i++) {
                         d3.select(".nodeId_"+d.target[i]).select('text')
                             .attr('font-size', '14')
@@ -146,9 +159,13 @@
                     d3.select(this).select('text')
                         .attr("class","nodeText none");
                     if(!d.clHight){
+                        // d3.select(this).select('.node')
+                        //     .attr('stroke-width', '')
+                        //     .attr('stroke',"");
                         d3.select(this).select('.node')
-                            .attr('stroke-width', '')
-                            .attr('stroke',"");
+                            .attr('class', 'node cursor');
+                        d3.select(this).select(".nodeRect")
+                            .attr("class","nodeRect");
                     }
                     d3.selectAll(".nodeText")
                         .attr("class","nodeText none");
@@ -168,8 +185,9 @@
                     //     }
                     // });
                     d3.selectAll(".node")
-                        .attr('stroke-width', '')
-                        .attr('stroke','');
+                        .attr("class","node cursor");
+                    d3.selectAll(".nodeRect")
+                        .attr("class","nodeRect");
                     d3graph.options.datas.nodes.forEach(function (node,index) {
                         if(i == index){
                             node.clHight = true;
@@ -177,9 +195,13 @@
                             node.clHight = false;
                         }
                     });
-                    d3.select(this).select('.node')
-                        .attr('stroke-width', '5')
-                        .attr('stroke',d3graph.options.palette.lightgray);
+                    d3.select(this).select(".node")
+                        .attr("class","node cursor selected");
+                    d3.select(this).select(".nodeRect")
+                        .attr("class","nodeRect selected");
+                    // d3.select(this).select('.node')
+                    //     .attr('stroke-width', '5')
+                    //     .attr('stroke',d3graph.options.palette.lightgray);
                     event.stopPropagation();
                 },
                 dblclick: function(d, i, n) {
@@ -259,9 +281,13 @@
                 },
                 contextmenu:function (d,i,n) {
                     // console.log("node右键");
+                    // d3.selectAll(".node")
+                    //     .attr('stroke-width', '')
+                    //     .attr('stroke','');
                     d3.selectAll(".node")
-                        .attr('stroke-width', '')
-                        .attr('stroke','');
+                        .attr("class","node cursor");
+                    d3.selectAll(".nodeRect")
+                        .attr("class","nodeRect");
                     d3graph.options.datas.nodes.forEach(function (node,index) {
                         if(i == index){
                             node.clHight = true;
@@ -270,8 +296,12 @@
                         }
                     });
                     d3.select(this).select('.node')
-                        .attr('stroke-width', '5')
-                        .attr('stroke',d3graph.options.palette.lightgray);
+                        .attr("class","node cursor selected");
+                    d3.select(this).select('.nodeRect')
+                        .attr("class","nodeRect selected");
+                    // d3.select(this).select('.node')
+                    //     .attr('stroke-width', '5')
+                    //     .attr('stroke',d3graph.options.palette.lightgray);
                     d3graph.highlightNodeMenu(d);
                     // event.stopPropagation();
                 }
@@ -326,9 +356,13 @@
                     // console.log("stage mouseout");
                 },
                 click:function(d,i){
+                    // d3.selectAll(".node")
+                    //     .attr('stroke-width', '')
+                    //     .attr('stroke','');
                     d3.selectAll(".node")
-                        .attr('stroke-width', '')
-                        .attr('stroke','');
+                        .attr("class","node cursor");
+                    d3.selectAll(".nodeRect")
+                        .attr("class","nodeRect");
                     d3graph.options.datas.nodes.forEach(function (node) {
                         node.clHight = false;
                     })
