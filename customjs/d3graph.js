@@ -1,6 +1,6 @@
 /**
  * Created by yanb on 2018/06/27
- * QQ:511948469
+ * QQ 511948469
  * 需要实现的功能：
  * 1、首次页面布局好看（d3自带 这也是吸引我用d3的原因）实现
  * 2、点的自定义属性 实现
@@ -57,8 +57,8 @@
  *
  * 目前还差两功能未实现：
  * 1、连线颜色根据值的大小渲染深浅 完成
- * 2、点的删除功能
- * 3、点可以更换成图片
+ * 2、点的删除功能 完成
+ * 3、点可以更换成图片 完成
  * 4、点按住ctrol键加click可以选择多个 并可以通过delet键删除
  * 5、框选删除
  *
@@ -275,32 +275,39 @@
             .call(_this.nodeDrag);
 
 
-        _this.node
-            .append("circle")
-            .attr('class', _this.options.style.nodeStyle['class'])
-            .attr("fill",function (d,i) {
-                if(i%2){
-                    return _this.options.palette.yellowgreen
-                }else {
-                    return _this.options.palette.purple
-                }
-            })
-            .call(_this.d3css( _this.options.style.nodeStyle.css ))
-            .call(_this.d3attr( _this.options.style.nodeStyle.attr));
-
         // _this.node
-        //     .append("image")
-        //     .attr("xlink:href",function (d,i) {
-        //         return "images/mobile.png"
-        //     })
-        //     .attr("x","-15px")
-        //     .attr("y","-15px")
-        //     .attr("width","30px")
-        //     .attr("height","30px")
+        //     .append("circle")
         //     .attr('class', _this.options.style.nodeStyle['class'])
+        //     .attr("fill",function (d,i) {
+        //         if(i%2){
+        //             return _this.options.palette.yellowgreen
+        //         }else {
+        //             return _this.options.palette.purple
+        //         }
+        //     })
         //     .call(_this.d3css( _this.options.style.nodeStyle.css ))
         //     .call(_this.d3attr( _this.options.style.nodeStyle.attr));
 
+        _this.node
+            .append("rect")
+            .attr("class","nodeRect")
+            .attr("width","31px")
+            .attr("height","31px")
+            .attr("x","-15px")
+            .attr("y","-15px")
+            .attr("fill","none");
+        _this.node
+            .append("image")
+            .attr("xlink:href",function (d,i) {
+                return "images/mobile.png"
+            })
+            .attr("x","-15px")
+            .attr("y","-15px")
+            .attr("width","30px")
+            .attr("height","30px")
+            .attr('class', _this.options.style.nodeStyle['class'])
+            .call(_this.d3css( _this.options.style.nodeStyle.css ))
+            .call(_this.d3attr( _this.options.style.nodeStyle.attr));
 
         _this.node
             .append('text')
