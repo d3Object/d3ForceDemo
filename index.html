@@ -111,264 +111,363 @@
             },
             index = numNodes;
         /****************造假数据代码***********************/
-
         d3graph.init({
+            nodeImg:true,
             datas: data,
-            nodeEvent: {
-                mouseover:function(d,i,n){
-                    d3.select(this).select('text')
-                        .attr('font-size', '16')
-                        .attr('font-weight', 'bold')
-                        .attr("class","nodeText");
-                    // d3.select(this).select('.node')
-                    //     .attr('stroke-width', '5')
-                    //     .attr('stroke',d3graph.options.palette.lightgray);
-                    d3.select(this).select('.node')
-                        .attr("class","node cursor selected");
-                    d3.select(this).select(".nodeRect")
-                        .attr("class","nodeRect selected");
-                    for(var i = 0; i < d.target.length; i++) {
-                        d3.select(".nodeId_"+d.target[i]).select('text')
-                            .attr('font-size', '14')
+            style:{
+                svgStyle:{
+                    attr:{
+                        class:"stage_svg"
+                    },
+                    css:{
+                        width:window.innerWidth,
+                        height:window.innerHeight
+                    }
+                },
+                mapGStyle:{
+                    attr:{
+                        class:"stage_g",
+                        id:"forceGroup"
+                    }
+                },
+                lineGStyle:{
+                    attr:{
+                        class:function (d,i) {
+                            // lineG为必传
+                            return "lineG "+
+                                "lineG"+d.source.id + '_' + d.target.id + " "+
+                                "lineG"+d.target.id + '_' + d.source.id;
+                        }
+                    }
+                },
+                lineStyle:{
+                    attr:{
+                        class:"line cursor",
+                        "stroke-width":"1",
+                        "stroke":function (d,i) {
+                            return d3graph.options.lineColor(d3graph.options.datas.edges,d.value)
+                        }
+                    }
+                },
+                lineTextStyle:{
+                    attr:{
+                        class:"lineText none",
+                        "font-size":"14",
+                        "font-weight":"bold",
+                        "dy":"1.5em"
+                    }
+                },
+                nodeGStyle:{
+                    attr:{
+                        class:function (d,i) {
+                            return "nodeG nodeId_"+d.id;
+                        }
+                    }
+                },
+                nodeStyle:{
+                    attr:{
+                        class:"node cursor",
+                        x:"-15px",
+                        y:"-15px",
+                        width:"30px",
+                        height:"30px",
+                        "xlink:href":function(d,i){
+                            return "images/mobile.png"
+                        }
+                    }
+                },
+                rectStyle:{
+                    attr:{
+                        class:"nodeRect",
+                        x:"-15px",
+                        y:"-15px",
+                        width:"31px",
+                        height:"31px",
+                        fill:"none"
+                    }
+                },
+                nodeTextStyle:{
+                    attr:{
+                        "font-size":"12",
+                        "dy":"1.5em",
+                        "class":"nodeText none"
+                    }
+                }
+            },
+            event:{
+                stageEvent:{
+                    mousedown:function (d,i) {
+                        console.log(d3.event.pageX);
+                        console.log(d3.event.pageY);
+                        console.log("stageEvent mousedown");
+                        // d3graph.mapG
+                        //     .append("rect")
+                        //     .attr("style","fill:rgb(0,0,255);stroke-width:1;stroke:rgb(0,0,0)")
+                        //     .attr("")
+                    },
+                    mouseup:function (d,i) {
+                        // console.log("stage mouseup");
+                    },
+                    mouseover:function(d,i){
+                        d3graph.highlightNodeMenu(d);
+                    },
+                    mouseout:function(d,i){
+                        // console.log("stage mouseout");
+                    },
+                    click:function(d,i){
+                        // d3.selectAll(".node")
+                        //     .attr('stroke-width', '')
+                        //     .attr('stroke','');
+                        d3.selectAll(".node")
+                            .attr("class","node cursor");
+                        d3.selectAll(".nodeRect")
+                            .attr("class","nodeRect");
+                        d3graph.options.datas.nodes.forEach(function (node) {
+                            node.clHight = false;
+                        })
+                    },
+                    contextmenu:function(d,i){
+                        d3.event.preventDefault();
+                    }
+                },
+                nodeGEvent:{
+                    mouseover:function(d,i,n){
+                        d3.select(this).select('text')
+                            .attr('font-size', '16')
                             .attr('font-weight', 'bold')
                             .attr("class","nodeText");
-                    }
-                    //此处还得找到别人target它
-                    for(var y = 0;y < d3graph.options.datas.nodes.length;y++){
-                        for(var j=0;j<d3graph.options.datas.nodes[y].target.length;j++){
-                            if(d3graph.options.datas.nodes[y].target[j] == d.id){
-                                d3.select(".nodeId_"+d3graph.options.datas.nodes[y].id).select('text')
-                                    .attr('font-size', '14')
-                                    .attr('font-weight', 'bold')
-                                    .attr("class","nodeText");
-                                d3.select(".lineG"+d.id+"_"+d3graph.options.datas.nodes[y].id).select("line")
-                                    .attr('stroke-width', 5);
-                                d3.select(".lineG"+d3graph.options.datas.nodes[y].id+"_"+d.id).select("line")
-                                    .attr('stroke-width', 5);
+                        // d3.select(this).select('.node')
+                        //     .attr('stroke-width', '5')
+                        //     .attr('stroke',d3graph.options.palette.lightgray);
+                        d3.select(this).select('.node')
+                            .attr("class","node cursor selected");
+                        d3.select(this).select(".nodeRect")
+                            .attr("class","nodeRect selected");
+                        for(var i = 0; i < d.target.length; i++) {
+                            d3.select(".nodeId_"+d.target[i]).select('text')
+                                .attr('font-size', '14')
+                                .attr('font-weight', 'bold')
+                                .attr("class","nodeText");
+                        }
+                        //此处还得找到别人target它
+                        for(var y = 0;y < d3graph.options.datas.nodes.length;y++){
+                            for(var j=0;j<d3graph.options.datas.nodes[y].target.length;j++){
+                                if(d3graph.options.datas.nodes[y].target[j] == d.id){
+                                    d3.select(".nodeId_"+d3graph.options.datas.nodes[y].id).select('text')
+                                        .attr('font-size', '14')
+                                        .attr('font-weight', 'bold')
+                                        .attr("class","nodeText");
+                                    d3.select(".lineG"+d.id+"_"+d3graph.options.datas.nodes[y].id).select("line")
+                                        .attr('stroke-width', 5);
+                                    d3.select(".lineG"+d3graph.options.datas.nodes[y].id+"_"+d.id).select("line")
+                                        .attr('stroke-width', 5);
+                                }
                             }
                         }
-                    }
-                    for(var x = 0; x < d.target.length; x++) {
-                        d3.select(".lineG"+d.id+"_"+d.target[x]).select("line")
-                            .attr('stroke-width', 5);
-                        d3.select(".lineG"+d.target[x]+"_"+d.id).select("line")
-                            .attr('stroke-width', 5);
-                    }
-                },
-                mouseout:function(d,i,n){
-                    d3.select(this).select('text')
-                        .attr("class","nodeText none");
-                    if(!d.clHight){
-                        // d3.select(this).select('.node')
-                        //     .attr('stroke-width', '')
-                        //     .attr('stroke',"");
-                        d3.select(this).select('.node')
-                            .attr('class', 'node cursor');
-                        d3.select(this).select(".nodeRect")
-                            .attr("class","nodeRect");
-                    }
-                    d3.selectAll(".nodeText")
-                        .attr("class","nodeText none");
-                    d3.selectAll('.line')
-                        .attr('stroke-width', 1);
-                    for(var x = 0; x < d.target.length; x++) {
-                        $("#"+d.index+"_"+d.target[x])
+                        for(var x = 0; x < d.target.length; x++) {
+                            d3.select(".lineG"+d.id+"_"+d.target[x]).select("line")
+                                .attr('stroke-width', 5);
+                            d3.select(".lineG"+d.target[x]+"_"+d.id).select("line")
+                                .attr('stroke-width', 5);
+                        }
+                    },
+                    mouseout:function(d,i,n){
+                        d3.select(this).select('text')
+                            .attr("class","nodeText none");
+                        if(!d.clHight){
+                            // d3.select(this).select('.node')
+                            //     .attr('stroke-width', '')
+                            //     .attr('stroke',"");
+                            d3.select(this).select('.node')
+                                .attr('class', 'node cursor');
+                            d3.select(this).select(".nodeRect")
+                                .attr("class","nodeRect");
+                        }
+                        d3.selectAll(".nodeText")
+                            .attr("class","nodeText none");
+                        d3.selectAll('.line')
                             .attr('stroke-width', 1);
-                    }
-                },
-                click:function(d,i,n){
-                    // $(document).keydown(function (e) {
-                    //     if(e.keyCode == 17){
-                    //         console.log(e.keyCode);
-                    //     }else {
-                    //         console.log("else");
-                    //     }
-                    // });
-                    d3.selectAll(".node")
-                        .attr("class","node cursor");
-                    d3.selectAll(".nodeRect")
-                        .attr("class","nodeRect");
-                    d3graph.options.datas.nodes.forEach(function (node,index) {
-                        if(i == index){
-                            node.clHight = true;
-                        }else {
-                            node.clHight = false;
+                        for(var x = 0; x < d.target.length; x++) {
+                            $("#"+d.index+"_"+d.target[x])
+                                .attr('stroke-width', 1);
                         }
-                    });
-                    d3.select(this).select(".node")
-                        .attr("class","node cursor selected");
-                    d3.select(this).select(".nodeRect")
-                        .attr("class","nodeRect selected");
-                    // d3.select(this).select('.node')
-                    //     .attr('stroke-width', '5')
-                    //     .attr('stroke',d3graph.options.palette.lightgray);
-                    event.stopPropagation();
-                },
-                dblclick: function(d, i, n) {
-                    d.center = true;
-                    if(d3graph.flag){
-                        var newNumNodes = parseInt(Math.random() * 10)+1,
-                            nodes = [],
-                            links = [],
-                            tempNum = 0;
-                        for (var y = 0; y < newNumNodes; y++) {
-                            tempNum = index + y +1;
-                            var x0 = d3graph.LocationXy(y,d.x,d.y,newNumNodes,100).x,
-                                y0 = d3graph.LocationXy(y,d.x,d.y,newNumNodes,100).y;
-                            nodes.push({
-                                id: tempNum,
-                                name: "node" + tempNum,
-                                target: [d.id],
-                                value:tempNum,
-                                fixed: false,
-                                x:x0,
-                                y:y0,
-                                fx:x0,
-                                fy:y0
-                            });
-                            links.push({
-                                "fromID": d.id,
-                                "toID": tempNum,
-                                "value": tempNum
-                            });
-                            d.target.push(tempNum);
-                        }
+                    },
+                    click:function(d,i,n){
+                        // console.log(d);
+                        // d3.selectAll(".node")
+                        //     .attr("class","node cursor");
+                        // d3.selectAll(".nodeRect")
+                        //     .attr("class","nodeRect");
+                        // d3graph.options.datas.nodes.forEach(function (node,index) {
+                        //     if(i == index){
+                        //         node.clHight = true;
+                        //     }else {
+                        //         node.clHight = false;
+                        //     }
+                        // });
+                        // d3.select(this).select(".node")
+                        //     .attr("class","node cursor selected");
+                        // d3.select(this).select(".nodeRect")
+                        //     .attr("class","nodeRect selected");
+                        // d3.select(this).select('.node')
+                        //     .attr('stroke-width', '5')
+                        //     .attr('stroke',d3graph.options.palette.lightgray);
+                        // if(d.center){
+                        //     var centerNum = 0,
+                        //         _tIndex = 0;
+                        //     for(var i = 0;i<d.target.length;i++){
+                        //         for(j = 0;j<d3graph.options.datas.nodes.length;j++){
+                        //             if(d.target[i] == d3graph.options.datas.nodes[j].id && d3graph.options.datas.nodes[j].center){
+                        //                 centerNum += 1;
+                        //             }
+                        //         }
+                        //     }
+                        //     for(var i = 0;i<d.target.length;i++){
+                        //         for(j = 0;j<d3graph.options.datas.nodes.length;j++){
+                        //             if(d.target[i] == d3graph.options.datas.nodes[j].id && !d3graph.options.datas.nodes[j].center){
+                        //                 d3graph.options.datas.nodes[j].x = d3graph.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).x;
+                        //                 d3graph.options.datas.nodes[j].fx = d3graph.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).x;
+                        //                 d3graph.options.datas.nodes[j].y = d3graph.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).y;
+                        //                 d3graph.options.datas.nodes[j].fy = d3graph.LocationXy(_tIndex,d.x,d.y,(d.target.length-centerNum),100).y;
+                        //                 _tIndex +=1;
+                        //             }
+                        //         }
+                        //     }
+                        //     d3graph.loadData(d3graph.options.datas);
+                        // }
+                        event.stopPropagation();
+                    },
+                    dblclick: function(d, i, n) {
                         d.center = true;
-                        index += tempNum;
-                        d3graph.loadData({
-                            "nodes": nodes,
-                            "edges": links
+                        if(d3graph.flag){
+                            var newNumNodes = parseInt(Math.random() * 10)+1,
+                                nodes = [],
+                                links = [],
+                                tempNum = 0;
+                            for (var y = 0; y < newNumNodes; y++) {
+                                tempNum = index + y +1;
+                                var x0 = d3graph.LocationXy(y,d.x,d.y,newNumNodes,100).x,
+                                    y0 = d3graph.LocationXy(y,d.x,d.y,newNumNodes,100).y;
+                                nodes.push({
+                                    id: tempNum,
+                                    name: "node" + tempNum,
+                                    target: [d.id],
+                                    value:tempNum,
+                                    fixed: false,
+                                    x:x0,
+                                    y:y0,
+                                    fx:x0,
+                                    fy:y0
+                                });
+                                links.push({
+                                    "fromID": d.id,
+                                    "toID": tempNum,
+                                    "value": tempNum
+                                });
+                                d.target.push(tempNum);
+                            }
+                            d.center = true;
+                            index += tempNum;
+                            d3graph.loadData({
+                                "nodes": nodes,
+                                "edges": links
+                            });
+                        }else {
+                            d3graph.options.datas = {
+                                "nodes":[],
+                                "edges":[]
+                            };
+                            d3graph.loadData({
+                                "nodes": [
+                                    {
+                                        "id": index,
+                                        "fixed": false,
+                                        "name": "node" + index,
+                                        "target":[index-1],
+                                        "value":index,
+                                        "x":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).x,
+                                        "y":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).y,
+                                        "fx":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).x,
+                                        "fy":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).y
+                                    },
+                                    {
+                                        "id": index-1,
+                                        "fixed": false,
+                                        "name": "node" + (index-1),
+                                        "target":[index],
+                                        "value":index,
+                                        "x":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).x,
+                                        "y":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).y,
+                                        "fx":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).x,
+                                        "fy":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).y
+                                    }
+                                ],
+                                "edges": [{
+                                    "fromID": index-1,
+                                    "toID": index,
+                                    "value": index
+                                }]
+                            });
+                            index += 1;
+                            d3graph.flag = true;
+                        }
+                    },
+                    contextmenu:function (d,i,n) {
+                        // console.log("node右键");
+                        // d3.selectAll(".node")
+                        //     .attr('stroke-width', '')
+                        //     .attr('stroke','');
+                        d3.selectAll(".node")
+                            .attr("class","node cursor");
+                        d3.selectAll(".nodeRect")
+                            .attr("class","nodeRect");
+                        d3graph.options.datas.nodes.forEach(function (node,index) {
+                            if(i == index){
+                                node.clHight = true;
+                            }else {
+                                node.clHight = false;
+                            }
                         });
-                    }else {
-                        d3graph.options.datas = {
-                            "nodes":[],
-                            "edges":[]
-                        };
-                        d3graph.loadData({
-                            "nodes": [
-                                {
-                                    "id": index,
-                                    "fixed": false,
-                                    "name": "node" + index,
-                                    "target":[index-1],
-                                    "value":index,
-                                    "x":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).x,
-                                    "y":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).y,
-                                    "fx":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).x,
-                                    "fy":d3graph.LocationXy(0,window.innerWidth/2,window.innerHeight/2,2,100).y
-                                },
-                                {
-                                    "id": index-1,
-                                    "fixed": false,
-                                    "name": "node" + (index-1),
-                                    "target":[index],
-                                    "value":index,
-                                    "x":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).x,
-                                    "y":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).y,
-                                    "fx":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).x,
-                                    "fy":d3graph.LocationXy(1,window.innerWidth/2,window.innerHeight/2,2,100).y
-                                }
-                            ],
-                            "edges": [{
-                                "fromID": index-1,
-                                "toID": index,
-                                "value": index
-                            }]
-                        });
-                        index += 1;
-                        d3graph.flag = true;
+                        d3.select(this).select('.node')
+                            .attr("class","node cursor selected");
+                        d3.select(this).select('.nodeRect')
+                            .attr("class","nodeRect selected");
+                        // d3.select(this).select('.node')
+                        //     .attr('stroke-width', '5')
+                        //     .attr('stroke',d3graph.options.palette.lightgray);
+                        d3graph.highlightNodeMenu(d);
+                        // event.stopPropagation();
                     }
                 },
-                contextmenu:function (d,i,n) {
-                    // console.log("node右键");
-                    // d3.selectAll(".node")
-                    //     .attr('stroke-width', '')
-                    //     .attr('stroke','');
-                    d3.selectAll(".node")
-                        .attr("class","node cursor");
-                    d3.selectAll(".nodeRect")
-                        .attr("class","nodeRect");
-                    d3graph.options.datas.nodes.forEach(function (node,index) {
-                        if(i == index){
-                            node.clHight = true;
-                        }else {
+                linkGEvent:{
+                    mouseover:function (d,i,l) {
+                        d3.select(this).select(".line")
+                            .attr('stroke-width', 5);
+                        d3.select(this).select(".lineText")
+                            .attr("class","lineText");
+                    },
+                    mouseout:function (d,i,l) {
+                        d3.select(this).select(".line")
+                            .attr('stroke-width', 1);
+                        d3.select(this).select(".lineText")
+                            .attr("class","lineText none");
+                    },
+                    click:function (d,i,l) {
+                        d3.selectAll(".node")
+                            .attr('stroke-width', '')
+                            .attr('stroke','');
+                        d3graph.options.datas.nodes.forEach(function (node) {
                             node.clHight = false;
-                        }
-                    });
-                    d3.select(this).select('.node')
-                        .attr("class","node cursor selected");
-                    d3.select(this).select('.nodeRect')
-                        .attr("class","nodeRect selected");
-                    // d3.select(this).select('.node')
-                    //     .attr('stroke-width', '5')
-                    //     .attr('stroke',d3graph.options.palette.lightgray);
-                    d3graph.highlightNodeMenu(d);
-                    // event.stopPropagation();
-                }
-            },
-            linkEvent:{
-                mouseover:function (d,i,l) {
-                    d3.select(this).select(".line")
-                        .attr('stroke-width', 5);
-                    d3.select(this).select(".lineText")
-                        .attr("class","lineText");
-                },
-                mouseout:function (d,i,l) {
-                    d3.select(this).select(".line")
-                        .attr('stroke-width', 1);
-                    d3.select(this).select(".lineText")
-                        .attr("class","lineText none");
-                },
-                click:function (d,i,l) {
-                    d3.selectAll(".node")
-                        .attr('stroke-width', '')
-                        .attr('stroke','');
-                    d3graph.options.datas.nodes.forEach(function (node) {
-                        node.clHight = false;
-                    });
-                    event.stopPropagation();
-                },
-                dblclick:function (d,i,l) {
-                    console.log(d);
-                    console.log("link双击");
-                },
-                contextmenu:function(d,i,l){
-                    console.log("link右键")
-                }
-            },
-            stageEvent:{
-                mousedown:function (d,i) {
-                    console.log(d3.event.pageX);
-                    console.log(d3.event.pageY);
-                    console.log("stageEvent mousedown");
-                    // d3graph.mapG
-                    //     .append("rect")
-                    //     .attr("style","fill:rgb(0,0,255);stroke-width:1;stroke:rgb(0,0,0)")
-                    //     .attr("")
-                },
-                mouseup:function (d,i) {
-                    // console.log("stage mouseup");
-                },
-                mouseover:function(d,i){
-                    d3graph.highlightNodeMenu(d);
-                },
-                mouseout:function(d,i){
-                    // console.log("stage mouseout");
-                },
-                click:function(d,i){
-                    // d3.selectAll(".node")
-                    //     .attr('stroke-width', '')
-                    //     .attr('stroke','');
-                    d3.selectAll(".node")
-                        .attr("class","node cursor");
-                    d3.selectAll(".nodeRect")
-                        .attr("class","nodeRect");
-                    d3graph.options.datas.nodes.forEach(function (node) {
-                        node.clHight = false;
-                    })
-                },
-                contextmenu:function(d,i){
-                    d3.event.preventDefault();
+                        });
+                        event.stopPropagation();
+                    },
+                    dblclick:function (d,i,l) {
+                        console.log(d);
+                        console.log("link双击");
+                    },
+                    contextmenu:function(d,i,l){
+                        console.log("link右键")
+                    }
                 }
             }
         }).loadData();
@@ -380,21 +479,16 @@
              * enter 13
              */
             if(e.keyCode == 46){
-                console.log("可以删除点咯");
                 d3graph.options.datas.nodes.forEach(function (node,index) {
                     if(node.clHight){
-                        console.log(node);
-
-                        function removeLink(){
-                            d3graph.options.datas.edges.forEach(function (link,linkindex) {
-                                if(link.fromID == node.id || link.toID == node.id){
-                                    console.log(link);
-                                    d3graph.options.datas.edges.splice(linkindex,1);
-                                    removeLink();
-                                }
-                            });
+                        for(var i=0,linkFlag=true;i<d3graph.options.datas.edges.length;linkFlag ? i++ : i){
+                            if(d3graph.options.datas.edges[i].fromID == node.id || d3graph.options.datas.edges[i].toID== node.id){
+                                d3graph.options.datas.edges.splice(i,1);
+                                linkFlag = false;
+                            } else {
+                                linkFlag = true;
+                            }
                         }
-                        removeLink();
                         d3graph.options.datas.nodes.splice(index,1);
                         d3graph.loadData(d3graph.options.datas);
                     }
