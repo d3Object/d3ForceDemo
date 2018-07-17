@@ -1,6 +1,6 @@
 /**
  * Created by yanb on 2018/06/27
- * QQ 511948469
+ * QQ511948469
  * 需要实现的功能：
  * 1、首次页面布局好看（d3自带 这也是吸引我用d3的原因）实现
  * 2、点的自定义属性 实现
@@ -82,28 +82,189 @@
     _this.options = {
         version:"1.0",
         elementID : "#stage_box",
+        nodeImg:false,//是否将用图片作node
         style:{
             svgStyle:{
-                class:'stage_svg',
-                css:{
-                    width:window.innerWidth,
-                    height:window.innerHeight
-                }
+                attr:{},
+                css:{}
             },
-            gStyle:{
-                class:'stage_g',
+            mapGStyle:{
+                attr:{},
+                css:{}
+            },
+            lineGStyle:{
+                attr:{},
                 css:{}
             },
             lineStyle:{
-                class:'line cursor',
+                attr:{},
+                css:{}
+            },
+            lineTextStyle:{
+              attr:{},
+              css:{}
+            },
+            nodeGStyle:{
+                attr:{},
                 css:{}
             },
             nodeStyle:{
-                class:'node cursor',
-                attr:{
-                    r:'5'
-                },
+                attr:{},
                 css:{}
+            },
+            rectStyle:{
+                attr:{},
+                css:{}
+            },
+            nodeTextStyle:{
+                attr:{},
+                css:{}
+            }
+        },
+        event:{
+            stageEvent:{
+                mousedown:function(d,i){},
+                mouseup:function(d,i){},
+                mouseover:function(d,i){},
+                mousemove:function(d,i){},
+                mouseout:function(d,i){},
+                click:function(d,i){},
+                dblclick:function(d,i){},
+                contextmenu:function(d,i){},
+                keydown:function (d,i) {},
+                keypress:function (d,i) {},
+                keyup:function (d,i) {},
+                touchstart:function (d,i) {},
+                touchmove:function (d,i) {},
+                touchend:function (d,i) {}
+            },
+            mapGEvent:{
+                mousedown:function(d,i){},
+                mouseup:function(d,i){},
+                mouseover:function(d,i){},
+                mousemove:function(d,i){},
+                mouseout:function(d,i){},
+                click:function(d,i){},
+                dblclick:function(d,i){},
+                contextmenu:function(d,i){},
+                keydown:function (d,i) {},
+                keypress:function (d,i) {},
+                keyup:function (d,i) {},
+                touchstart:function (d,i) {},
+                touchmove:function (d,i) {},
+                touchend:function (d,i) {}
+            },
+            linkGEvent:{
+                mousedown:function(d,i){},
+                mouseup:function(d,i){},
+                mouseover:function(d,i){},
+                mousemove:function(d,i){},
+                mouseout:function(d,i){},
+                click:function(d,i){},
+                dblclick:function(d,i){},
+                contextmenu:function(d,i){},
+                keydown:function (d,i) {},
+                keypress:function (d,i) {},
+                keyup:function (d,i) {},
+                touchstart:function (d,i) {},
+                touchmove:function (d,i) {},
+                touchend:function (d,i) {}
+            },
+            linkEvent:{
+                mousedown:function(d,i){},
+                mouseup:function(d,i){},
+                mouseover:function(d,i){},
+                mousemove:function(d,i){},
+                mouseout:function(d,i){},
+                click:function(d,i){},
+                dblclick:function(d,i){},
+                contextmenu:function(d,i){},
+                keydown:function (d,i) {},
+                keypress:function (d,i) {},
+                keyup:function (d,i) {},
+                touchstart:function (d,i) {},
+                touchmove:function (d,i) {},
+                touchend:function (d,i) {}
+            },
+            linkTextEvent:{
+                mousedown:function(d,i){},
+                mouseup:function(d,i){},
+                mouseover:function(d,i){},
+                mousemove:function(d,i){},
+                mouseout:function(d,i){},
+                click:function(d,i){},
+                dblclick:function(d,i){},
+                contextmenu:function(d,i){},
+                keydown:function (d,i) {},
+                keypress:function (d,i) {},
+                keyup:function (d,i) {},
+                touchstart:function (d,i) {},
+                touchmove:function (d,i) {},
+                touchend:function (d,i) {}
+            },
+            nodeGEvent:{
+                mousedown:function(d,i){},
+                mouseup:function(d,i){},
+                mouseover:function(d,i){},
+                mousemove:function(d,i){},
+                mouseout:function(d,i){},
+                click:function(d,i){},
+                dblclick:function(d,i){},
+                contextmenu:function(d,i){},
+                keydown:function (d,i) {},
+                keypress:function (d,i) {},
+                keyup:function (d,i) {},
+                touchstart:function (d,i) {},
+                touchmove:function (d,i) {},
+                touchend:function (d,i) {}
+            },
+            nodeEvent:{
+                mousedown:function(d,i){},
+                mouseup:function(d,i){},
+                mouseover:function(d,i){},
+                mousemove:function(d,i){},
+                mouseout:function(d,i){},
+                click:function(d,i){},
+                dblclick:function(d,i){},
+                contextmenu:function(d,i){},
+                keydown:function (d,i) {},
+                keypress:function (d,i) {},
+                keyup:function (d,i) {},
+                touchstart:function (d,i) {},
+                touchmove:function (d,i) {},
+                touchend:function (d,i) {}
+            },
+            nodeRectEvent:{
+                mousedown:function(d,i){},
+                mouseup:function(d,i){},
+                mouseover:function(d,i){},
+                mousemove:function(d,i){},
+                mouseout:function(d,i){},
+                click:function(d,i){},
+                dblclick:function(d,i){},
+                contextmenu:function(d,i){},
+                keydown:function (d,i) {},
+                keypress:function (d,i) {},
+                keyup:function (d,i) {},
+                touchstart:function (d,i) {},
+                touchmove:function (d,i) {},
+                touchend:function (d,i) {}
+            },
+            nodeTextEvent:{
+                mousedown:function(d,i){},
+                mouseup:function(d,i){},
+                mouseover:function(d,i){},
+                mousemove:function(d,i){},
+                mouseout:function(d,i){},
+                click:function(d,i){},
+                dblclick:function(d,i){},
+                contextmenu:function(d,i){},
+                keydown:function (d,i) {},
+                keypress:function (d,i) {},
+                keyup:function (d,i) {},
+                touchstart:function (d,i) {},
+                touchmove:function (d,i) {},
+                touchend:function (d,i) {}
             }
         },
         forc:{
@@ -153,34 +314,7 @@
             "#52B7F9",
             "#36A8F9",
             "#1e81f9"
-        ],
-        stageEvent:{
-            mousedown:function(d,i){},
-            mouseup:function(d,i){},
-            mouseover:function(d,i){},
-            mouseout:function(d,i){},
-            click:function(d,i){},
-            dblclick:function(d,i){},
-            contextmenu:function(d,i){}
-        },
-        nodeEvent:{
-            mousedown:function(d,i,n){},
-            mouseup:function(d,i,n){},
-            mouseover:function(d,i,n){},
-            mouseout:function(d,i,n){},
-            click:function(d,i,n){},
-            dblclick:function(d,i,n){},
-            contextmenu:function(d,i,n){}
-        },
-        linkEvent :{
-            mousedown:function(d,i,l){},
-            mouseup:function(d,i,l){},
-            mouseover:function(d,i,l){},
-            mouseout:function(d,i,l){},
-            click:function(d,i,l){},
-            dblclick:function(d,i,l){},
-            contextmenu:function(d,i,l){}
-        }
+        ]
     };
     _this.init=function(option){
         if(testObject(option)){
@@ -188,19 +322,15 @@
         }
         _this.fdGraph = d3.select( _this.options.elementID)
             .append('svg')
-            .attr('class', _this.options.style.svgStyle['class'])
-            .attr('width', _this.options.style.svgStyle.width)
-            .attr('height',  _this.options.style.svgStyle.height)
-            .call(_this.d3css( _this.options.style.svgStyle.css ))
+            .call(_this.d3css( _this.options.style.svgStyle.css))
+            .call(_this.d3attr(_this.options.style.svgStyle.attr))
             .call(_this.zoom)
             .on("dblclick.zoom",null)
-            .call(_this.d3event( _this.options.stageEvent));
+            .call(_this.d3event( _this.options.event.stageEvent));
         _this.mapG = _this.fdGraph.append("g")
-            .attr('class', _this.options.style.gStyle['class'])
-            .call(_this.d3css( _this.options.style.gStyle.css ))
-            .call(_this.d3attr({
-                "id":"forceGroup"
-            }));
+            .call(_this.d3css( _this.options.style.mapGStyle.css))
+            .call(_this.d3attr( _this.options.style.mapGStyle.attr))
+            .call(_this.d3event(_this.options.event.mapGEvent));
         return _this;
     };
     _this.zoom = d3.zoom().scaleExtent([0.2,10]).on("zoom",function(){_this.zoomed();});
@@ -238,84 +368,62 @@
             .data(_this.options.datas.edges)
             .enter()
             .append("g")
-            .attr("class",function (d,i) {
-               return "lineG "+
-                   "lineG"+d.source.id + '_' + d.target.id + " "+
-                   "lineG"+d.target.id + '_' + d.source.id;
-            })
-            .call(_this.d3event( _this.options.linkEvent ));
+            .call(_this.d3css(_this.options.style.lineGStyle.css))
+            .call(_this.d3attr(_this.options.style.lineGStyle.attr))
+            .call(_this.d3event(_this.options.event.linkGEvent));
         _this.link
             .append("line")
             .data(_this.options.datas.edges)
-            .attr('class', _this.options.style.lineStyle['class'])
-            .call(_this.d3css( _this.options.style.lineStyle.css ))
-            .call(_this.d3attr({
-                "stroke-width":"1",
-                // "stroke":"#65C3F9",
-                "stroke":function (d) {
-                    return _this.options.lineColor(_this.options.datas.edges,d.value)
-                }
-            }));
+            .call(_this.d3css( _this.options.style.lineStyle.css))
+            .call(_this.d3attr( _this.options.style.lineStyle.attr))
+            .call(_this.d3event(_this.options.event.linkEvent));
         _this.link
             .append("text")
-            .attr("class","lineText none")
-            .attr('font-size', '14')
-            .attr('font-weight', 'bold')
-            .attr("dy","1.5em")
+            .call(_this.d3css((_this.options.style.lineTextStyle.css)))
+            .call(_this.d3attr((_this.options.style.lineTextStyle.attr)))
+            .call(_this.d3event(_this.options.event.linkTextEvent))
             .text(function(d) { return String(d.value) || '' });
         _this.node = _this.mapG
             .selectAll(".nodeG")
             .data(_this.options.datas.nodes)
             .enter()
             .append("g")
-            .attr("class",function (d,i) {
-                return "nodeG nodeId_"+d.id;
-            })
-            .call(_this.d3event( _this.options.nodeEvent))
+            .call(_this.d3css(_this.options.style.nodeGStyle.css))
+            .call(_this.d3attr(_this.options.style.nodeGStyle.attr))
+            .call(_this.d3event( _this.options.event.nodeGEvent))
             .call(_this.nodeDrag);
-
-
-        // _this.node
-        //     .append("circle")
-        //     .attr('class', _this.options.style.nodeStyle['class'])
-        //     .attr("fill",function (d,i) {
-        //         if(i%2){
-        //             return _this.options.palette.yellowgreen
-        //         }else {
-        //             return _this.options.palette.purple
-        //         }
-        //     })
-        //     .call(_this.d3css( _this.options.style.nodeStyle.css ))
-        //     .call(_this.d3attr( _this.options.style.nodeStyle.attr));
-
-        _this.node
-            .append("rect")
-            .attr("class","nodeRect")
-            .attr("width","31px")
-            .attr("height","31px")
-            .attr("x","-15px")
-            .attr("y","-15px")
-            .attr("fill","none");
-        _this.node
-            .append("image")
-            .attr("xlink:href",function (d,i) {
-                return "images/mobile.png"
-            })
-            .attr("x","-15px")
-            .attr("y","-15px")
-            .attr("width","30px")
-            .attr("height","30px")
-            .attr('class', _this.options.style.nodeStyle['class'])
-            .call(_this.d3css( _this.options.style.nodeStyle.css ))
-            .call(_this.d3attr( _this.options.style.nodeStyle.attr));
-
+        if(_this.options.nodeImg){
+            _this.node
+                .append("rect")
+                .call(_this.d3css(_this.options.style.rectStyle.css))
+                .call(_this.d3attr(_this.options.style.rectStyle.attr))
+                .call(_this.d3event(_this.options.event.nodeRectEvent));
+            _this.node
+                .append("image")
+                .call(_this.d3css( _this.options.style.nodeStyle.css))
+                .call(_this.d3attr( _this.options.style.nodeStyle.attr))
+                .call(_this.d3event(_this.options.event.nodeEvent));
+        }else {
+            _this.node
+                .append("circle")
+                // .attr("fill",function (d,i) {
+                //     if(i%2){
+                //         return _this.options.palette.yellowgreen
+                //     }else {
+                //         return _this.options.palette.purple
+                //     }
+                // })
+                .call(_this.d3css( _this.options.style.nodeStyle.css ))
+                .call(_this.d3attr( _this.options.style.nodeStyle.attr))
+                .call(_this.d3event(_this.options.event.nodeEvent));
+        }
         _this.node
             .append('text')
-            .attr('font-size', '12')
-            .attr("dy","1.5em")
-            .attr("class","nodeText none")
+            .call(_this.d3css(_this.options.style.nodeTextStyle.css))
+            .call(_this.d3attr(_this.options.style.nodeTextStyle.attr))
+            .call(_this.d3event(_this.options.event.nodeTextEvent))
             .text(function(d){
-                return d.name || "" ;
+                return String(d.name) || "" ;
             });
         _this.startSport();
         return  _this;
@@ -335,13 +443,30 @@
         d.fy = d3.event.y;
     };
     _this.dragend=function(d, i) {
-        //d.fixed = true;    //拖拽开始后设定被拖拽对象为固定
+        // d.fixed = true;    //拖拽开始后设定被拖拽对象为固定
         if (!d3.event.active){
             _this.force.alphaTarget(0);
         }
         //_this.force.stop();
         if(d3.event.sourceEvent.type == "mouseup"){
             // console.log(d);
+
+            d3.selectAll(".node")
+                .attr("class","node cursor");
+            d3.selectAll(".nodeRect")
+                .attr("class","nodeRect");
+            d3graph.options.datas.nodes.forEach(function (node,index) {
+                if(i == index){
+                    node.clHight = true;
+                }else {
+                    node.clHight = false;
+                }
+            });
+            d3.select(this).select(".node")
+                .attr("class","node cursor selected");
+            d3.select(this).select(".nodeRect")
+                .attr("class","nodeRect selected");
+
             if(d.center){
                 var centerNum = 0,
                     _tIndex = 0;
