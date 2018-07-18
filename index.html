@@ -29,6 +29,19 @@
             stroke-dasharray: 1;
             stroke: #BD3613;
         }
+        #stage_box,
+        .stage_svg,
+        .stage_g,
+        .lineG,
+        .line,
+        .lineText,
+        .nodeG,
+        .node,
+        .nodeRect,
+        .nodeText{
+            outline: none;
+        }
+
         .nodeContextmenu{
             /*position:absolute;*/
             z-index: 2;
@@ -117,7 +130,7 @@
             style:{
                 svgStyle:{
                     attr:{
-                        class:"stage_svg"
+                        class:"stage_svg"//stage_svg为必传
                     },
                     css:{
                         width:window.innerWidth,
@@ -126,15 +139,14 @@
                 },
                 mapGStyle:{
                     attr:{
-                        class:"stage_g",
+                        class:"stage_g",//stage_g 为必传
                         id:"forceGroup"
                     }
                 },
                 lineGStyle:{
                     attr:{
                         class:function (d,i) {
-                            // lineG为必传
-                            return "lineG "+
+                            return "lineG "+  // lineG为必传
                                 "lineG"+d.source.id + '_' + d.target.id + " "+
                                 "lineG"+d.target.id + '_' + d.source.id;
                         }
@@ -142,7 +154,7 @@
                 },
                 lineStyle:{
                     attr:{
-                        class:"line cursor",
+                        class:"line cursor",//line为必传
                         "stroke-width":"1",
                         "stroke":function (d,i) {
                             return d3graph.options.lineColor(d3graph.options.datas.edges,d.value)
@@ -151,7 +163,7 @@
                 },
                 lineTextStyle:{
                     attr:{
-                        class:"lineText none",
+                        class:"lineText none",//lineText 为必传
                         "font-size":"14",
                         "font-weight":"bold",
                         "dy":"1.5em"
@@ -160,13 +172,13 @@
                 nodeGStyle:{
                     attr:{
                         class:function (d,i) {
-                            return "nodeG nodeId_"+d.id;
+                            return "nodeG nodeId_"+d.id;//nodeG为必传
                         }
                     }
                 },
                 nodeStyle:{
                     attr:{
-                        class:"node cursor",
+                        class:"node cursor",//node为必传
                         x:"-15px",
                         y:"-15px",
                         width:"30px",
@@ -178,7 +190,7 @@
                 },
                 rectStyle:{
                     attr:{
-                        class:"nodeRect",
+                        class:"nodeRect",//nodeRect为必传
                         x:"-15px",
                         y:"-15px",
                         width:"31px",
@@ -188,36 +200,23 @@
                 },
                 nodeTextStyle:{
                     attr:{
+                        class:"nodeText none",//nodeText为必传
                         "font-size":"12",
-                        "dy":"1.5em",
-                        "class":"nodeText none"
+                        dy:"1.5em"
                     }
                 }
             },
             event:{
                 stageEvent:{
                     mousedown:function (d,i) {
-                        console.log(d3.event.pageX);
-                        console.log(d3.event.pageY);
-                        console.log("stageEvent mousedown");
-                        // d3graph.mapG
-                        //     .append("rect")
-                        //     .attr("style","fill:rgb(0,0,255);stroke-width:1;stroke:rgb(0,0,0)")
-                        //     .attr("")
+                        //此处写框选代码
                     },
                     mouseup:function (d,i) {
-                        // console.log("stage mouseup");
+                        // 此处为隐藏或删除框选框
                     },
-                    mouseover:function(d,i){
-                        d3graph.highlightNodeMenu(d);
-                    },
-                    mouseout:function(d,i){
-                        // console.log("stage mouseout");
-                    },
+                    mouseover:function(d,i){},
+                    mouseout:function(d,i){},
                     click:function(d,i){
-                        // d3.selectAll(".node")
-                        //     .attr('stroke-width', '')
-                        //     .attr('stroke','');
                         d3.selectAll(".node")
                             .attr("class","node cursor");
                         d3.selectAll(".nodeRect")
@@ -236,9 +235,6 @@
                             .attr('font-size', '16')
                             .attr('font-weight', 'bold')
                             .attr("class","nodeText");
-                        // d3.select(this).select('.node')
-                        //     .attr('stroke-width', '5')
-                        //     .attr('stroke',d3graph.options.palette.lightgray);
                         d3.select(this).select('.node')
                             .attr("class","node cursor selected");
                         d3.select(this).select(".nodeRect")
@@ -275,9 +271,6 @@
                         d3.select(this).select('text')
                             .attr("class","nodeText none");
                         if(!d.clHight){
-                            // d3.select(this).select('.node')
-                            //     .attr('stroke-width', '')
-                            //     .attr('stroke',"");
                             d3.select(this).select('.node')
                                 .attr('class', 'node cursor');
                             d3.select(this).select(".nodeRect")
@@ -410,13 +403,10 @@
                             });
                             index += 1;
                             d3graph.flag = true;
+                            d3graph.zoom.transform(d3graph.fdGraph,d3.zoomIdentity);//重置缩放
                         }
                     },
                     contextmenu:function (d,i,n) {
-                        // console.log("node右键");
-                        // d3.selectAll(".node")
-                        //     .attr('stroke-width', '')
-                        //     .attr('stroke','');
                         d3.selectAll(".node")
                             .attr("class","node cursor");
                         d3.selectAll(".nodeRect")
@@ -432,9 +422,6 @@
                             .attr("class","node cursor selected");
                         d3.select(this).select('.nodeRect')
                             .attr("class","nodeRect selected");
-                        // d3.select(this).select('.node')
-                        //     .attr('stroke-width', '5')
-                        //     .attr('stroke',d3graph.options.palette.lightgray);
                         d3graph.highlightNodeMenu(d);
                         // event.stopPropagation();
                     }
