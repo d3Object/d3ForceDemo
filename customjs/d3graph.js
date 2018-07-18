@@ -1,6 +1,6 @@
 /**
  * Created by yanb on 2018/06/27
- * QQ511948469
+ * QQ 511948469
  * 需要实现的功能：
  * 1、首次页面布局好看（d3自带 这也是吸引我用d3的原因）实现
  * 2、点的自定义属性 实现
@@ -80,44 +80,62 @@
     window.d3graph = new Object();
     var _this = window.d3graph;
     _this.options = {
-        version:"1.0",
+        version:"1.5",
         elementID : "#stage_box",
         nodeImg:false,//是否将用图片作node
         style:{
             svgStyle:{
-                attr:{},
+                attr:{
+                    tabindex:"1"
+                },
                 css:{}
             },
             mapGStyle:{
-                attr:{},
+                attr:{
+                    tabindex:"2"
+                },
                 css:{}
             },
             lineGStyle:{
-                attr:{},
+                attr:{
+                    tabindex:"3"
+                },
                 css:{}
             },
             lineStyle:{
-                attr:{},
+                attr:{
+                    tabindex:"4"
+                },
                 css:{}
             },
             lineTextStyle:{
-              attr:{},
+              attr:{
+                  tabindex:"4"
+              },
               css:{}
             },
             nodeGStyle:{
-                attr:{},
+                attr:{
+                    tabindex:"3"
+                },
                 css:{}
             },
             nodeStyle:{
-                attr:{},
+                attr:{
+                    tabindex:"4"
+                },
                 css:{}
             },
             rectStyle:{
-                attr:{},
+                attr:{
+                    tabindex:"4"
+                },
                 css:{}
             },
             nodeTextStyle:{
-                attr:{},
+                attr:{
+                    tabindex:"4"
+                },
                 css:{}
             }
         },
