@@ -65,13 +65,13 @@
 初次出现：
 
 
-![](images/forceImg1.gif)
+![](images/topimg1.gif)
 
 
 双击点的钻取功能：
 
 
-![](images/forceImg2.gif)
+![](images/topimg2.gif)
 
 
 效果如下：
