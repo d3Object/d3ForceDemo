@@ -65,28 +65,14 @@
 初次出现：
 
 
-![](images/topimg1.gif)
+![](images/topoimg1.gif)
 
 
 双击点的钻取功能：
 
 
-![](images/topimg2.gif)
+![](images/topoimg2.gif)
 
-
-效果如下：
-
- ### 我最终想实现的效果如下
- ![](img.png)
- 
- ### demo1
- ![](img1.gif)
- 
- ### demo2
- ![](img2.gif)
- 
- ### demo3
- ![](img3.gif)
 
 [我一哥们的threeTestdemo](https://doter1995.github.io/three/threeTest/)
 
