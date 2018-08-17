@@ -1,4 +1,4 @@
-f# d3ForceDemo d3力导向图
+# d3ForceDemo d3力导向图
 
 最近项目中可能会用到力导向布局图 于是自己写咯个demo 此demo大概实现功能如下：
  * 需要实现的功能：
