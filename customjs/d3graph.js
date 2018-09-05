@@ -15,7 +15,7 @@
  * 11、点的click事件 实现
  * 12、点的拖拽功能 实现
  * 13、点的增加功能 实现
- * 14、点的删除功能 实现
+ * 14、点的删除功能 实现（单个）
  * 15、点的更改功能
  * 16、点的查找功能
  * 17、点的自定义位置 不受力的作用 实现
@@ -52,18 +52,16 @@
  * 48、显示隐藏所有的node文字
  * 49、显示隐藏所有的line文字
  * 50、缩放设定范围 完成
- * 51、点可以更换成图片 已实现功能 未封装成API
- * 52、框选删除 暂未实现
+ * 51、点可以更换成图片 实现
+ * 52、连线颜色根据值的大小渲染深浅 完成
+ * 53、框选删除 暂未实现
  *
  * 目前还差两功能未实现：
- * 1、连线颜色根据值的大小渲染深浅 完成
- * 2、点的删除功能 完成
- * 3、点可以更换成图片 完成
- * 4、点按住ctrol键加click可以选择多个 并可以通过delet键删除
- * 5、框选删除
- *
- *
- *
+ * 1、点按住ctrol键加click可以选择多个 并可以通过delet键删除
+ * 2、框选删除
+ * bug：拖动某个点之后此点被固定住
+ *  要造框选首先需要造好右键菜单功能
+ * 右键菜单也要做成可配置的 包括图片 文字 click的执行的函数
  *
  * 命名规范：
  *  stage_box
@@ -73,6 +71,13 @@
  *  nodeG node nodeText
  *  lineG22_25 linG25_22
  *  nodeId_265
+ *
+ * 右键菜单功能思维：
+ * 1、弹出并填充内容
+ * 2、click执行对应的功能
+ * 3、关闭并清空子元素
+ *
+ *
  *
  */
 ;
@@ -138,6 +143,20 @@
                 },
                 css:{}
             }
+        },
+        contextmenuMap:{
+            stage_contextmenu:[
+                {
+                    id:"ctm_reload",
+                    name:"刷新",
+                    iconClass:"",
+                    event:function (d,i,n) {
+                        window.location.reload();
+                    }
+                }
+            ],
+            nodeG_contextmenu:[],
+            linkG_contextmenu:[]
         },
         event:{
             stageEvent:{
@@ -634,29 +653,43 @@
         return d3event;
     };
     _this.flag = false;
-    _this.highlightNodeMenu = function(obj){
-        if(obj){
-            _this.nodeContextmenu.html(
-                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
-                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
-                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
-                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
-                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
-                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"+
-                "<li><i class=\"fontPtcolor glyphicon glyphicon-trash\"></i><a class=\"white\">删除对象</a></li>"
-            )
-                .style("left",(d3.event.pageX)+"px")
-                .style("top",(d3.event.pageY-20)+"px")
-                .attr("class","nodeContextmenu");
-        }else {
-            _this.nodeContextmenu.attr("class","nodeContextmenu none")
-        }
-    };
+    /**
+     * 创建右键菜单母容器
+     *
+     */
     _this.nodeContextmenu = d3.select("body").append("ul")
         .attr("class","nodeContextmenu none");
-
-
-
+    /**
+     * 开启或关闭右键菜单功能
+     * 开启传参 stage_contextmenu nodeG_contextmenu linkG_contextmenu
+     * 关闭传参 除上述外任意参数
+     * @param str
+     */
+    _this.highlightContextmenu = function(str){
+        $(".control_li_ctm").remove();
+        switch (str){
+            case "stage_contextmenu":
+            case "nodeG_contextmenu":
+            case "linkG_contextmenu":
+                d3.map(_this.options.contextmenuMap[str]).each(function (item,index) {
+                    d3.select("body").select(".nodeContextmenu")
+                        .append("li")
+                        .attr("class","control_li_ctm")
+                        .attr("id",item.id)
+                        .on("click",item.event())
+                        .append("a")
+                        .attr("class","white")
+                        .html('<i class="'+item.iconClass+'"></i>'+item.name)
+                });
+                _this.nodeContextmenu
+                    .style("left",(d3.event.pageX)+"px")
+                    .style("top",(d3.event.pageY-20)+"px")
+                    .attr("class","nodeContextmenu nav nav-pills nav-stacked");
+                break;
+            default:
+                _this.nodeContextmenu.attr("class","nodeContextmenu nav nav-pills nav-stacked none")
+        }
+    };
 
     function testObject(obj){
         var flag = false;
