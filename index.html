@@ -59,16 +59,19 @@
             /*font-family: Helvetica Neue,Helvetica, Arial,sans-serif;*/
             /*font-size: 12px*/
         }
-        .nodeContextmenu>li{
-            width:120px;
-            margin:5px;
-        }
+        /*.nodeContextmenu>li{*/
+            /*width:120px;*/
+            /*margin:5px;*/
+        /*}*/
         .fontPtcolor{
             color:#fff;
             margin-right: 7px;
         }
         .white{
             color:#fff;
+        }
+        .nodeContextmenu .white:hover .fontPtcolor{
+            color:#2a6496
         }
     </style>
 </head>
@@ -206,6 +209,61 @@
                     }
                 }
             },
+            contextmenuMap:{
+                nodeG_contextmenu:[
+                    {
+                    id:"ctm_removeNode1",
+                    name:"删除对象",
+                    iconClass:"fontPtcolor glyphicon glyphicon-trash",
+                    event:function (d,i,n) {
+                        console.log(d);
+                        console.log(i);
+                        console.log(n);
+                        console.log(this);
+                    }
+                    },
+                    {
+                        id:"ctm_removeNode2",
+                        name:"删除对象",
+                        iconClass:"fontPtcolor glyphicon glyphicon-cog",
+                        event:function (d,i,n) {
+                            console.log(d);
+                            console.log(i);
+                            console.log(n)
+                        }
+                    }
+                    ],
+                stage_contextmenu:[{
+                    id:"stage_contextmenu1",
+                    name:"画布右键测试1",
+                    iconClass:"fontPtcolor glyphicon glyphicon-cog",
+                    event:function (d,i,n) {
+
+                    }
+                },{
+                    id:"stage_contextmenu2",
+                    name:"画布右键测试2",
+                    iconClass:"fontPtcolor glyphicon glyphicon-cog",
+                    event:function (d,i,n) {
+
+                    }
+                }],
+                linkG_contextmenu:[{
+                    id:"linkG_contextmenu1",
+                    name:"连线右键测试1",
+                    iconClass:"fontPtcolor glyphicon glyphicon-cog",
+                    event:function (d,i,n) {
+
+                    }
+                },{
+                    id:"linkG_contextmenu2",
+                    name:"连线右键测试2",
+                    iconClass:"fontPtcolor glyphicon glyphicon-cog",
+                    event:function (d,i,n) {
+
+                    }
+                }]
+            },
             event:{
                 stageEvent:{
                     mousedown:function (d,i) {
@@ -226,7 +284,10 @@
                         })
                     },
                     contextmenu:function(d,i){
+                        console.log("stage contextmenu");
+                        d3graph.highlightContextmenu("stage_contextmenu");
                         d3.event.preventDefault();
+                        event.stopPropagation();
                     }
                 },
                 nodeGEvent:{
@@ -285,6 +346,9 @@
                                 .attr('stroke-width', 1);
                         }
                     },
+                    keydown:function(d,i){
+                      console.log(d3.event);
+                    },
                     click:function(d,i,n){
                         // console.log(d);
                         // d3.selectAll(".node")
@@ -328,6 +392,7 @@
                         //     }
                         //     d3graph.loadData(d3graph.options.datas);
                         // }
+                        console.log(d3.event);
                         event.stopPropagation();
                     },
                     dblclick: function(d, i, n) {
@@ -422,8 +487,9 @@
                             .attr("class","node cursor selected");
                         d3.select(this).select('.nodeRect')
                             .attr("class","nodeRect selected");
-                        d3graph.highlightNodeMenu(d);
-                        // event.stopPropagation();
+                        d3graph.highlightContextmenu("nodeG_contextmenu");
+                        d3.event.preventDefault();
+                        event.stopPropagation();
                     }
                 },
                 linkGEvent:{
@@ -453,7 +519,10 @@
                         console.log("link双击");
                     },
                     contextmenu:function(d,i,l){
-                        console.log("link右键")
+                        d3graph.highlightContextmenu("linkG_contextmenu");
+                        console.log("link右键");
+                        d3.event.preventDefault();
+                        event.stopPropagation();
                     }
                 }
             }
@@ -466,7 +535,8 @@
              * enter 13
              */
             if(e.keyCode == 46){
-                d3graph.options.datas.nodes.forEach(function (node,index) {
+                for(var j=0,nodeFlag = true;j<d3graph.options.datas.nodes.length;nodeFlag ? j++ : j){
+                    var node = d3graph.options.datas.nodes[j];
                     if(node.clHight){
                         for(var i=0,linkFlag=true;i<d3graph.options.datas.edges.length;linkFlag ? i++ : i){
                             if(d3graph.options.datas.edges[i].fromID == node.id || d3graph.options.datas.edges[i].toID== node.id){
@@ -476,10 +546,18 @@
                                 linkFlag = true;
                             }
                         }
-                        d3graph.options.datas.nodes.splice(index,1);
-                        d3graph.loadData(d3graph.options.datas);
+                        d3graph.options.datas.nodes.splice(j,1);
+                        nodeFlag = false;
+                        // d3graph.loadData(d3graph.options.datas);
+                    }else {
+                        nodeFlag = true;
                     }
-                });
+                }
+                d3graph.loadData(d3graph.options.datas);
+
+                // d3graph.options.datas.nodes.forEach(function (node,index) {
+                //
+                // });
             }
             if(e.keyCode == 13){
                 d3graph.zoom.transform(d3graph.fdGraph,d3.zoomIdentity);//重置缩放
