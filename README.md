@@ -1,6 +1,6 @@
 # d3ForceDemo d3力导向图
 最近项目中可能会用到力导向布局图 于是自己写咯个demo 此demo大概实现功能如下：
-
+lll
  * 需要实现的功能：
  * 1、首次页面布局好看（d3自带 这也是吸引我用d3的原因）实现
  * 2、点的自定义属性 实现
@@ -81,8 +81,4 @@
 [然后是这哥们吹牛* 的主页](https://doter1995.github.io/)
 
 
-[这哥们的博客值得一读关于d3力导向图的](https://blog.csdn.net/lzwdfas/article/details/60466566)
-
-https://blog.csdn.net/tengxing007/article/details/59712572
-
-https://github.com/tianxuzhang/d3.v4-API-Translation#hierarchies
+[这哥们的博客值得一读关于d3力导向图的
